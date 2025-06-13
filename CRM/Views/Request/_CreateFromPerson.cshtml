@@ -1,0 +1,73 @@
+﻿@model CRM.Models.Request
+
+
+
+<link href="~/css/light.css" rel="stylesheet" />
+@* <link href="~/css/dark.css" rel="stylesheet" /> *@
+<form id="createRequestForm" action="/Request/CreateFromPerson" method="post" class="neon-form">
+    <input type="hidden" asp-for="PersonId" />
+
+    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+    <div class="mb-3">
+        <label asp-for="Description" class="form-label">Description</label>
+        <input asp-for="Description" class="form-control" />
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Comments" class="form-label">Comments</label>
+        <textarea asp-for="Comments" class="form-control" rows="3" placeholder="Additional comments..."></textarea>
+        <span asp-validation-for="Comments" class="text-danger"></span>
+    </div>
+
+    <div class="row">
+        <div class="mb-3 col-md-6">
+            <label class="form-label">Created At</label>
+            <input type="text" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd HH:mm")" readonly />
+            <input type="hidden" asp-for="CreatedAt" value="@DateTime.Now" />
+        </div>
+
+      @*   <div class="mb-3 col-md-6">
+            <label asp-for="CreatedByCode" class="form-label">Created By Code</label>
+            <input asp-for="CreatedByCode" class="form-control" placeholder="User Code or Initials" />
+            <span asp-validation-for="CreatedByCode" class="text-danger"></span>
+        </div> *@
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="StatusId" class="form-label">Status</label>
+        @Html.DropDownListFor(m => m.StatusId, ViewBag.StatusId as SelectList, "-- Select Status --", new { @class = "form-select" })
+        <span asp-validation-for="StatusId" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="FollowUpCount" class="form-label">Follow-Up Count</label>
+        <input asp-for="FollowUpCount" type="number" class="form-control" min="0" />
+        <span asp-validation-for="FollowUpCount" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="LastFollowUpDate" class="form-label">Last Follow-Up Date</label>
+        <input asp-for="LastFollowUpDate" type="date" class="form-control" />
+        <span asp-validation-for="LastFollowUpDate" class="text-danger"></span>
+    </div>
+
+    <div class="modal-footer border-0 pt-4">
+        <button type="submit" class="btn-glow">
+            <i class="bi bi-save"></i> Save Request
+        </button>
+        <button type="button" class="btn-cancel" data-bs-dismiss="modal">
+            <i class="bi bi-x-circle"></i> Cancel
+        </button>
+    </div>
+</form>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+
+

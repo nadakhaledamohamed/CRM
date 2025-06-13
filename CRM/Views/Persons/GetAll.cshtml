@@ -1,0 +1,417 @@
+﻿@using Microsoft.AspNetCore.Html 
+@using System.Text.Json
+@using Microsoft.AspNetCore.Mvc.ViewFeatures
+
+
+@model List<CRM.Models.PersonRequestViewModel>
+@{
+    ViewData["Title"] = "All Person Requests";
+    string Selected(string key) => ViewBag.SortBy == key ? "selected" : "";
+}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+<link href="~/css/light.css" rel="stylesheet" />
+<div class="container my-5">
+    <h2 class="GetAll-header"> <i class="bi bi-people-fill"></i> All Person Requests </h2>
+
+    <!-- 🔍 Dynamic Search Filters -->
+    <!-- 🔍 Dynamic Search Filters with Multi-Condition Logic -->
+
+    <form id="filterForm" method="get" action="@Url.Action("GetAll")" class="bg-light p-4 rounded shadow mb-5">
+        <h4 class="mb-3"><i class="bi bi-search"></i> Filter & Search</h4>
+        <div id="dynamic-filters"></div>
+        <div class="text-end mt-3">
+            <button type="button" class="btn btn-outline-primary" id="addFilter"><i class="bi bi-plus"></i> Add Condition</button>
+        </div>
+        <div class="text-center mt-4">
+            <button type="submit" class="btn btn-primary"><i class="bi bi-search"></i> Search</button>
+            <a href="@Url.Action("GetAll")" class="btn btn-outline-secondary"><i class="bi bi-arrow-clockwise"></i> Reset</a>
+        </div>
+    </form>
+
+
+    <!-- Data Cards----------------- -->
+    <div id="cards-wrapper">
+    @if (Model.Any())
+    {
+        <div class="row g-4">
+            @foreach (var item in Model)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <div class="neon-card">
+                        <div class="neon-header">
+                            <div class="neon-avatar">
+                                <span>@item.FirstName[0]@item.LastName[0]</span>
+                            </div>
+                            <h5>@item.FirstName @item.LastName</h5>
+                            <p>@item.UserTypeName</p>
+                        </div>
+                        <div class="neon-info">
+                            <div><i class="bi bi-envelope"></i> <span class="info-text">@item.Email</span></div>
+                            <div><i class="bi bi-phone"></i> <span class="custom-badge">@item.Phone</span></div>
+                            <div><i class="bi bi-credit-card"></i> <span class="custom-badge">National ID: @item.NationalId</span></div>
+                            <div><i class="bi bi-hourglass-split"></i> <span class="custom-badge">Follow-Ups: @item.FollowUpCount</span></div>
+                            <div><i class="bi bi-calendar-check"></i> <span class="custom-badge">Last Follow-Up: @DisplayDate(item.LastFollowUpDate)</span></div>
+                            <div><i class="bi bi-shield-check"></i> <span class="custom-badge">Status: @item.StatusName</span></div>
+                            <hr />
+                            <div><i class="bi bi-person-badge"></i> Created By: @item.Person_CreatedByName</div>
+                            <div><i class="bi bi-calendar3"></i> Created: @item.Person_CreatedAt.ToString("MMM dd, yyyy")</div>
+                        </div>
+                        <div class="text-center mt-3">
+                            <a href="@Url.Action("Details", "Persons", new { id = item.PersonID })" class="btn btn-glow w-100">
+                                <i class="bi bi-eye"></i> View Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Pagination -->
+        @if (ViewBag.TotalPages > 1)
+        {
+            <nav class="mt-4">
+                <ul class="pagination justify-content-center">
+                    @if (ViewBag.CurrentPage > 1)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" href="@GetPageUrl(ViewBag.CurrentPage - 1)">«</a>
+                        </li>
+                    }
+                    @for (int i = Math.Max(1, ViewBag.CurrentPage - 2); i <= Math.Min(ViewBag.TotalPages, ViewBag.CurrentPage + 2); i++)
+                    {
+                        <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                            <a class="page-link" href="@GetPageUrl(i)">@i</a>
+                        </li>
+                    }
+                    @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" href="@GetPageUrl(ViewBag.CurrentPage + 1)">»</a>
+                        </li>
+                    }
+                </ul>
+            </nav>
+        }
+    }
+    else
+    {
+        <div class="alert alert-info text-center">
+            <i class="bi bi-info-circle"></i> No person requests found matching your criteria.
+        </div>
+    }
+</div>
+
+    @section Scripts {
+       <script>
+
+                      // COMPLETE FIXED JAVASCRIPT FOR AJAX PAGINATION
+
+            const statusOptions = @Html.Raw(Json.Serialize(ViewBag.StatusOptions));
+            const userTypeOptions = @Html.Raw(Json.Serialize(ViewBag.UserTypeOptions));
+            const initialFilters = @Html.Raw(Json.Serialize(ViewBag.InitialFilters));
+
+            let filterIndex = 0;
+
+            // Clean up all existing event listeners
+            function cleanupEventListeners() {
+                const addBtn = document.getElementById("addFilter");
+                if (addBtn) {
+                    const newAddBtn = addBtn.cloneNode(true);
+                    addBtn.parentNode.replaceChild(newAddBtn, addBtn);
+                }
+
+                const form = document.getElementById("filterForm");
+                if (form) {
+                    const newForm = form.cloneNode(true);
+                    form.parentNode.replaceChild(newForm, form);
+                }
+            }
+
+            // Attach event listeners (called only once)
+            function attachEventListeners() {
+                const addBtn = document.getElementById("addFilter");
+                if (addBtn) {
+                    addBtn.onclick = function() {
+                        addFilterRow();
+                    };
+                }
+
+                const form = document.getElementById("filterForm");
+                if (form) {
+                    form.onsubmit = function(e) {
+                        e.preventDefault();
+                        handleSearch(this);
+                    };
+                }
+
+                const resetBtn = document.querySelector('a[href*="GetAll"]:not([type="submit"])');
+                if (resetBtn) {
+                    resetBtn.onclick = function(e) {
+                        e.preventDefault();
+                        window.location.href = this.href;
+                    };
+                }
+            }
+
+            // Handle remove button clicks using event delegation
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('.remove-filter')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    const filterSet = e.target.closest('.filter-set');
+                    if (filterSet) {
+                        filterSet.remove();
+                    }
+                }
+            });
+
+            // FIXED: Properly serialize form data including dynamic filters
+            function serializeFormData(form) {
+                const formData = new FormData(form);
+                const params = new URLSearchParams();
+
+                // Add all form data to params
+                for (const [key, value] of formData.entries()) {
+                    if (value && value.toString().trim() !== '') {
+                        params.append(key, value);
+                    }
+                }
+
+                return params;
+            }
+
+            // FIXED: Handle search submission with proper serialization
+            function handleSearch(form, pageNumber = 1) {
+                const params = serializeFormData(form);
+
+                // Always set the page number
+                params.set('page', pageNumber);
+
+                const url = form.action + "?" + params.toString();
+
+                fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest' // Optional: helps server know it's AJAX
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.text();
+                })
+                .then(html => {
+                    updateResults(html);
+
+                    // FIXED: Update browser URL without page refresh
+                    window.history.pushState({}, '', url);
+                })
+                .catch(error => {
+                    console.error('Search error:', error);
+                    alert('An error occurred while searching. Please try again.');
+                });
+            }
+
+            // FIXED: Update results and pagination
+            function updateResults(html) {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+
+                // Update results section
+                const cardsWrapper = document.getElementById("cards-wrapper");
+                const newCardsWrapper = doc.getElementById("cards-wrapper");
+
+                if (cardsWrapper && newCardsWrapper) {
+                    cardsWrapper.innerHTML = newCardsWrapper.innerHTML;
+                }
+
+                // FIXED: Update pagination with proper event handlers
+                const existingPagination = document.querySelector("nav.mt-4");
+                if (existingPagination) {
+                    existingPagination.remove();
+                }
+
+                const newPagination = doc.querySelector("nav.mt-4");
+                if (newPagination) {
+                    // Clone the pagination
+                    const paginationClone = newPagination.cloneNode(true);
+
+                    // Update all pagination links to use AJAX
+                    const paginationLinks = paginationClone.querySelectorAll('a.page-link');
+                    paginationLinks.forEach(link => {
+                        const href = link.getAttribute('href');
+                        if (href && href !== '#') {
+                            // Extract page number from URL
+                            const urlParams = new URLSearchParams(href.split('?')[1]);
+                            const pageNumber = urlParams.get('page') || 1;
+
+                            // Replace with AJAX call
+                            link.setAttribute('href', '#');
+                            link.onclick = function(e) {
+                                e.preventDefault();
+                                goToPage(parseInt(pageNumber));
+                                return false;
+                            };
+                        }
+                    });
+
+                    // Insert updated pagination
+                    cardsWrapper.appendChild(paginationClone);
+                }
+
+                // Recalculate filter index
+                recalculateFilterIndex();
+            }
+
+            // FIXED: Handle pagination clicks with AJAX
+            function goToPage(page) {
+                const form = document.getElementById("filterForm");
+                if (!form) return;
+
+                // Call handleSearch with the specific page number
+                handleSearch(form, page);
+            }
+
+            // Make goToPage globally available
+            window.goToPage = goToPage;
+
+            // Properly recalculate the next available filter index
+            function recalculateFilterIndex() {
+                const existingFilters = document.querySelectorAll(".filter-set");
+                let maxIndex = -1;
+
+                existingFilters.forEach(filter => {
+                    const inputs = filter.querySelectorAll('input[name*="filters["], select[name*="filters["]');
+                    inputs.forEach(input => {
+                        const match = input.name.match(/filters\[(\d+)\]/);
+                        if (match) {
+                            maxIndex = Math.max(maxIndex, parseInt(match[1]));
+                        }
+                    });
+                });
+
+                filterIndex = maxIndex + 1;
+            }
+
+            // Add a new filter row
+            function addFilterRow(field = "", op = "equals", val = "") {
+                const container = document.getElementById('dynamic-filters');
+                const row = document.createElement('div');
+                row.className = 'filter-set row g-3 align-items-end mt-2';
+
+                const currentIndex = filterIndex;
+
+                row.innerHTML = `
+                    <div class="col-md-3">
+                        <label class="form-label">Field</label>
+                        <select name="filters[${currentIndex}].Field" class="form-select filter-field" onchange="renderValueControl(this, ${currentIndex}, '')">
+                            <option value="">-- Select Field --</option>
+                            <option value="StatusId" ${field === "StatusId" ? 'selected' : ''}>Status</option>
+                            <option value="UserType" ${field === "UserType" ? 'selected' : ''}>User Type</option>
+                            <option value="Email" ${field === "Email" ? 'selected' : ''}>Email</option>
+                            <option value="Phone" ${field === "Phone" ? 'selected' : ''}>Phone</option>
+                            <option value="NationalId" ${field === "NationalId" ? 'selected' : ''}>National ID</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Operator</label>
+                        <select name="filters[${currentIndex}].Operator" class="form-select">
+                            <option value="equals" ${op === "equals" ? 'selected' : ''}>is</option>
+                            <option value="not_equals" ${op === "not_equals" ? 'selected' : ''}>is not</option>
+                            <option value="contains" ${op === "contains" ? 'selected' : ''}>contains</option>
+                            <option value="not_contains" ${op === "not_contains" ? 'selected' : ''}>does not contain</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 value-container"></div>
+                    <div class="col-md-2">
+                        <label class="form-label d-block">&nbsp;</label>
+                        <button type="button" class="btn btn-danger remove-filter">
+                            <i class="bi bi-x-lg"></i>
+                        </button>
+                    </div>`;
+
+                container.appendChild(row);
+
+                const fieldSelect = row.querySelector('.filter-field');
+                renderValueControl(fieldSelect, currentIndex, val);
+
+                filterIndex++;
+            }
+
+            // Render value control based on field type
+            function renderValueControl(selectElement, index, selectedVal) {
+                const field = selectElement.value;
+                const container = selectElement.closest('.filter-set');
+                const valueContainer = container.querySelector('.value-container');
+                let html = '';
+
+                if (field === 'UserType') {
+                    html = `<label class="form-label">Value</label><select name="filters[${index}].Value" class="form-select">`;
+                    for (const key in userTypeOptions) {
+                        html += `<option value="${key}" ${key == selectedVal ? 'selected' : ''}>${userTypeOptions[key]}</option>`;
+                    }
+                    html += `</select>`;
+                } else if (field === 'StatusId') {
+                    html = `<label class="form-label">Value</label><select name="filters[${index}].Value" class="form-select">`;
+                    for (const key in statusOptions) {
+                        html += `<option value="${key}" ${key == selectedVal ? 'selected' : ''}>${statusOptions[key]}</option>`;
+                    }
+                    html += `</select>`;
+                } else if (field) {
+                    html = `<label class="form-label">Value</label><input name="filters[${index}].Value" class="form-control" placeholder="Enter value" value="${selectedVal}" />`;
+                }
+
+                valueContainer.innerHTML = html;
+            }
+
+            // Initialize everything when page loads
+            window.addEventListener("DOMContentLoaded", function() {
+                cleanupEventListeners();
+                attachEventListeners();
+
+                if (initialFilters && initialFilters.length > 0) {
+                    initialFilters.forEach(f => addFilterRow(f.Field, f.Operator, f.Value));
+                } else {
+                    addFilterRow();
+                }
+            });
+
+            // Make renderValueControl globally available
+            window.renderValueControl = renderValueControl;
+        </script>
+  
+    }
+
+
+
+@functions {
+    public IHtmlContent DisplayDate(DateTime? dt)
+    {
+        return dt.HasValue && dt.Value > DateTime.MinValue
+            ? new HtmlString(dt.Value.ToString("MMM dd, yyyy"))
+            : new HtmlString("<span class='text-muted'>N/A</span>");
+    }
+
+    public string GetPageUrl(int page)
+    {
+        var queryParams = new List<string>();
+        if (!string.IsNullOrEmpty(ViewBag.SearchTerm)) queryParams.Add($"searchTerm={Uri.EscapeDataString(ViewBag.SearchTerm)}");
+        if (!string.IsNullOrEmpty(ViewBag.Email)) queryParams.Add($"email={Uri.EscapeDataString(ViewBag.Email)}");
+        if (!string.IsNullOrEmpty(ViewBag.Phone)) queryParams.Add($"phone={Uri.EscapeDataString(ViewBag.Phone)}");
+        if (!string.IsNullOrEmpty(ViewBag.NationalId)) queryParams.Add($"nationalId={Uri.EscapeDataString(ViewBag.NationalId)}");
+        if (ViewBag.UserType != null) queryParams.Add($"userType={ViewBag.UserType}");
+        if (ViewBag.StatusId != null) queryParams.Add($"statusId={ViewBag.StatusId}");
+        if (!string.IsNullOrEmpty(ViewBag.CreatedBy)) queryParams.Add($"createdBy={Uri.EscapeDataString(ViewBag.CreatedBy)}");
+        if (!string.IsNullOrEmpty(ViewBag.CreatedFrom)) queryParams.Add($"createdFrom={ViewBag.CreatedFrom}");
+        if (!string.IsNullOrEmpty(ViewBag.CreatedTo)) queryParams.Add($"createdTo={ViewBag.CreatedTo}");
+        if (!string.IsNullOrEmpty(ViewBag.MatchType)) queryParams.Add($"matchType={ViewBag.MatchType}");
+        queryParams.Add($"sortBy={ViewBag.SortBy}");
+        queryParams.Add($"sortOrder={ViewBag.SortOrder}");
+        queryParams.Add($"page={page}");
+        return "?" + string.Join("&", queryParams);
+    }
+}
+

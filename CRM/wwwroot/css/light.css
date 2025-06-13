@@ -1,0 +1,356 @@
+﻿/* Background and base text color */
+
+body {
+    background-color: #f4f6fc;
+    color: #212529;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+/* Card design */
+.neon-card {
+    background: linear-gradient(to bottom right, #ffffff, #f8f9ff);
+    border: 1px solid #e0e0e0;
+    border-radius: 20px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06);
+    padding: 2rem;
+    transition: transform 0.3s ease;
+}
+
+    .neon-card:hover {
+        transform: scale(1.02);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+    }
+
+/* Header and sub-info */
+.neon-header h5 {
+    margin: 0.5rem 0 0.2rem;
+    color: #212529;
+    text-shadow: none;
+    font-weight: 700;
+}
+
+
+.neon-header p {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #6c757d;
+    text-shadow: none;
+    font-weight: 700;
+}
+
+/* Avatar circle */
+.neon-avatar {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #343a40, #6c757d);
+    color: #f8f9fa;
+    font-weight: bold;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 8px rgba(33, 37, 41, 0.3); /* subtle dark glow */
+    text-shadow: 0 0 4px rgba(0, 0, 0, 0.5); /* darker glow to enhance text */
+}
+
+
+/* Info icons and text */
+.neon-info {
+    text-align: left;
+    margin-top: 1rem;
+    font-size: 0.95rem;
+    color: #333;
+}
+
+    .neon-info i {
+        margin-right: 0.5rem;
+        color: #7f00ff;
+    }
+
+/* Buttons */
+.btn-glow {
+    background: linear-gradient(to right, #7f00ff, #e100ff);
+    color: white;
+    border: none;
+    padding: 0.6rem 1.5rem;
+    border-radius: 30px;
+    font-weight: 500;
+    box-shadow: 0 0 12px rgba(224, 0, 255, 0.3);
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+}
+
+    .btn-glow:hover {
+        background: linear-gradient(to right, #e100ff, #7f00ff);
+        box-shadow: 0 0 18px rgba(224, 0, 255, 0.6);
+        transform: scale(1.05);
+    }
+
+.btn-cancel {
+    background-color: #dee2e6;
+    color: #495057;
+    border: none;
+    padding: 0.6rem 1.3rem;
+    border-radius: 30px;
+    transition: all 0.3s ease;
+}
+
+    .btn-cancel:hover {
+        background-color: #ced4da;
+        color: #212529;
+    }
+
+/* Badges */
+.badge {
+    border-radius: 12px;
+    padding: 0.3rem 0.6rem;
+    font-size: 0.85rem;
+    background-color: #e9ecef;
+    color: #343a40;
+}
+
+/* Form elements for neon-form */
+.neon-form {
+    background: #fff;
+    border-radius: 20px;
+    padding: 2rem;
+    color: #212529;
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.05);
+}
+
+    /* Form label and controls */
+    .neon-form .form-label {
+        color: #6f42c1;
+        font-weight: 500;
+    }
+
+    .neon-form .form-control,
+    .neon-form .form-select {
+        background-color: #f1f3f5;
+        border: 1px solid #ced4da;
+        color: #212529;
+        border-radius: 12px;
+        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.04);
+    }
+
+        .neon-form .form-control:focus,
+        .neon-form .form-select:focus {
+            border-color: #7f00ff;
+            box-shadow: 0 0 10px rgba(127, 0, 255, 0.3);
+        }
+
+    /* Validation */
+    .neon-form .text-danger {
+        color: #dc3545;
+        font-size: 0.85rem;
+    }
+
+/* Modal matching light style */
+.modal-content {
+    border-radius: 20px;
+    background: #fff;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e9ecef;
+}
+
+.modal-header {
+    background-color: #f8f9fa;
+    color: #343a40;
+    border-bottom: 1px solid #dee2e6;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+}
+
+    .modal-header .modal-title {
+        color: #212529;
+        font-weight: 600;
+        text-shadow: 0 0 2px rgba(0, 0, 0, 0.05);
+    }
+
+.modal-body {
+    background-color: #ffffff;
+    color: #212529;
+}
+
+.modal-footer {
+    background-color: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+    justify-content: center;
+    gap: 1.5rem;
+}
+
+
+.btn-close-white {
+    filter: none;
+}
+
+.modal-footer {
+    justify-content: center;
+    gap: 1.5rem;
+}
+
+/* Tabs */
+.nav-pills .nav-link {
+    color: #6c757d;
+    border-radius: 50px;
+    transition: all 0.3s ease;
+}
+
+    .nav-pills .nav-link.active {
+        background: linear-gradient(to right, #7f00ff, #e100ff);
+        color: white;
+        box-shadow: 0 0 10px rgba(127, 0, 255, 0.4);
+    }
+
+.tab-pane {
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+.custom-badge, .info-text {
+    display: inline-block;
+    padding: 0.35em 0.65em;
+    font-size: 0.95rem;
+    font-weight: 500;
+    line-height: 1;
+    color: #343a40; /* Dark text */
+    /*background-color: #f8f9fa;*/ /* Light background */
+    border-radius: 0.375rem;
+    border: 1px solid rgba(0, 0, 0, 0.1); /* Light border */
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.05); /* subtle shadow */
+}
+
+.info-text {
+    overflow-wrap: break-word;
+    word-break: break-word;
+    max-width: 100%;
+}
+/* Layout Base */
+body {
+    background-color: #f4f6fc;
+    color: #212529;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+/* Neon Card */
+.neon-card {
+    background: linear-gradient(to bottom right, #ffffff, #f8f9ff);
+    border: 1px solid #e0e0e0;
+    border-radius: 20px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06);
+    transition: transform 0.3s ease;
+}
+
+    .neon-card:hover {
+        transform: scale(1.02);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+    }
+
+/* Form Section */
+.neon-form {
+    padding: 2rem;
+    background-color: #fff;
+    border-radius: 20px;
+    color: #212529;
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.05);
+}
+
+    /* Form Labels and Inputs */
+    .neon-form .form-label {
+        color: #6f42c1;
+        font-weight: 500;
+    }
+
+    .neon-form .form-control,
+    .neon-form .form-select {
+        background-color: #f1f3f5;
+        border: 1px solid #ced4da;
+        color: #212529;
+        border-radius: 12px;
+        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.04);
+        transition: box-shadow 0.3s ease;
+    }
+
+        .neon-form .form-control:focus,
+        .neon-form .form-select:focus {
+            border-color: #7f00ff;
+            box-shadow: 0 0 10px rgba(127, 0, 255, 0.3);
+        }
+
+/* Buttons */
+.btn-glow {
+    background: linear-gradient(to right, #7f00ff, #e100ff);
+    color: white;
+    border: none;
+    padding: 0.6rem 1.5rem;
+    border-radius: 30px;
+    font-weight: 500;
+    box-shadow: 0 0 12px rgba(224, 0, 255, 0.3);
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+    .btn-glow:hover {
+        background: linear-gradient(to right, #e100ff, #7f00ff);
+        box-shadow: 0 0 18px rgba(224, 0, 255, 0.6);
+        transform: scale(1.05);
+    }
+
+.btn-cancel {
+    background-color: #dee2e6;
+    color: #495057;
+    border: none;
+    padding: 0.6rem 1.3rem;
+    border-radius: 30px;
+    transition: all 0.3s ease;
+}
+
+    .btn-cancel:hover {
+        background-color: #ced4da;
+        color: #212529;
+    }
+
+/* Validation */
+.neon-form .text-danger {
+    color: #dc3545;
+    font-size: 0.85rem;
+}
+
+/* Badge and Info Styling */
+.custom-badge,
+.info-text {
+    display: inline-block;
+    padding: 0.35em 0.65em;
+    font-size: 0.95rem;
+    font-weight: 500;
+    line-height: 1;
+    color: #343a40;
+    border-radius: 0.375rem;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.05);
+}
+
+.info-text {
+    overflow-wrap: break-word;
+    word-break: break-word;
+    max-width: 100%;
+}

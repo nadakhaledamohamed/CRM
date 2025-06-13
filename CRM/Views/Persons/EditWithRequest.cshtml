@@ -1,0 +1,137 @@
+﻿@model CRM.Models.PersonRequestViewModel
+
+@{
+    ViewData["Title"] = "Edit Requests";
+}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet" />
+<link href="~/css/light.css" rel="stylesheet" />
+
+<div class="container mt-5 animate__animated animate__fadeInUp">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb bg-white p-3 rounded shadow-sm">
+            <li class="breadcrumb-item"><a href="/Home/Index" class="text-decoration-none text-primary">Dashboard</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Edit Requests #@Model.PersonID</li>
+        </ol>
+    </nav>
+
+    <div class="card neon-card shadow-lg animate__animated animate__zoomIn">
+        <div class="card-header text-white text-center py-3"
+             style="background: linear-gradient(to right, #7f00ff, #e100ff); border-radius: 1rem 1rem 0 0;">
+            <h4 class="fw-bold mb-0">Edit Requests for @Model.FirstName @Model.LastName</h4>
+        </div>
+
+        <div class="card-body neon-form">
+            <form asp-action="EditWithRequest" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="PersonID" />
+                <input type="hidden" asp-for="ID" />
+
+                <!-- Person Info -->
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label asp-for="FirstName" class="form-label text-primary">First Name</label>
+                        <input asp-for="FirstName" class="form-control" />
+                        <span asp-validation-for="FirstName" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="LastName" class="form-label text-primary">Last Name</label>
+                        <input asp-for="LastName" class="form-control" />
+                        <span asp-validation-for="LastName" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label asp-for="Email" class="form-label text-primary">Email</label>
+                        <input asp-for="Email" class="form-control" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Phone" class="form-label text-primary">Phone</label>
+                        <input asp-for="Phone" class="form-control" />
+                        <span asp-validation-for="Phone" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label asp-for="NationalId" class="form-label text-primary">National ID</label>
+                        <input asp-for="NationalId" class="form-control" />
+                        <span asp-validation-for="NationalId" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="UserType" class="form-label text-primary">User Type</label>
+                        <select asp-for="UserType" class="form-select" asp-items="ViewBag.UserType"></select>
+                        <span asp-validation-for="UserType" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label asp-for="HighSchoolId" class="form-label text-primary">High School</label>
+                        <select asp-for="HighSchoolId" class="form-select" asp-items="ViewBag.HighSchoolId"></select>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="CertificateId" class="form-label text-primary">Certificate</label>
+                        <select asp-for="CertificateId" class="form-select" asp-items="ViewBag.CertificateId"></select>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="MajorId" class="form-label text-primary">Major</label>
+                        <select asp-for="MajorId" class="form-select" asp-items="ViewBag.MajorId"></select>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="HowDidYouKnowUsId" class="form-label text-primary">How Did You Know Us?</label>
+                    <select asp-for="HowDidYouKnowUsId" class="form-select" asp-items="ViewBag.HowDidYouKnowUsId"></select>
+                </div>
+
+                <hr />
+                <h5 class="text-secondary mb-3">Requests</h5>
+
+                @for (int i = 0; i < Model.Requests.Count; i++)
+                {
+                    <input type="hidden" asp-for="Requests[@i].RequestId" />
+                    <div class="border p-3 mb-4 rounded shadow-sm">
+                        <div class="mb-3">
+                            <label asp-for="Requests[@i].Description" class="form-label text-primary">Description</label>
+                            <textarea asp-for="Requests[@i].Description" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="Requests[@i].Description" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Requests[@i].Comments" class="form-label text-primary">Comments</label>
+                            <textarea asp-for="Requests[@i].Comments" class="form-control" rows="3"></textarea>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="Requests[@i].FollowUpCount" class="form-label text-primary">Follow-Up Count</label>
+                                <input asp-for="Requests[@i].FollowUpCount" class="form-control" />
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Requests[@i].StatusId" class="form-label text-primary">Status</label>
+                                <select asp-for="Requests[@i].StatusId" class="form-select" asp-items="ViewBag.StatusId"></select>
+                            </div>
+                        </div>
+
+                        <p class="text-muted small">Last updated by: <strong>@Model.Requests[i].UpdatedByName</strong> on @Model.Requests[i].UpdatedAt?.ToString("yyyy-MM-dd HH:mm")</p>
+                    </div>
+                }
+
+                <!-- Submit Buttons -->
+                <div class="text-end">
+                    <a asp-action="Details" asp-route-id="@Model.PersonID" class="btn btn-cancel me-2">Cancel</a>
+                    <button type="submit" class="btn btn-glow">
+                        <i class="bi bi-check-circle me-1"></i> Save All Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+@{
+    await Html.RenderPartialAsync("_ValidationScriptsPartial");
+}

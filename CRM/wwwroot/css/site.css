@@ -1,0 +1,105 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
+  color: var(--bs-secondary-color);
+  text-align: end;
+}
+
+.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
+  text-align: start;
+}
+/* Dashboard Styles */
+.pipeline-stages {
+    display: flex;
+    justify-content: space-between;
+    text-align: center;
+    margin: 0 -10px;
+}
+
+.stage {
+    flex: 1;
+    padding: 0 10px;
+}
+
+.stage-header {
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.stage-count {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #4e73df;
+}
+
+.activity-timeline {
+    position: relative;
+    padding-left: 30px;
+}
+
+.activity-item {
+    position: relative;
+    padding-bottom: 20px;
+}
+
+    .activity-item:last-child {
+        padding-bottom: 0;
+    }
+
+.activity-dot {
+    position: absolute;
+    left: -30px;
+    top: 0;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: #4e73df;
+    border: 3px solid #e3e6f0;
+}
+
+.activity-content {
+    padding-left: 10px;
+}
+
+.activity-text {
+    margin-bottom: 5px;
+}
+
+.activity-date {
+    font-size: 0.8rem;
+    color: #858796;
+}
+
+/* Card enhancements */
+.card {
+    border: none;
+    border-radius: 0.35rem;
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+}
+
+.card-header {
+    background-color: #f8f9fc;
+    border-bottom: 1px solid #e3e6f0;
+    font-weight: 600;
+}

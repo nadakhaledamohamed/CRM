@@ -1,0 +1,290 @@
+﻿@model CRM.Models.PersonDetailsViewModel
+
+@{
+    ViewData["Title"] = "Person Details";
+}
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<link href="~/css/light.css" rel="stylesheet" />
+
+@* <link href="~/css/dark.css" rel="stylesheet" /> *@
+@* <style>
+    .modal-content {
+        border-radius: 20px;
+        background: linear-gradient(145deg, #121230, #0d0d20);
+        box-shadow: 0 0 25px rgba(224, 0, 255, 0.3);
+    }
+
+    .modal-header {
+        background-color: #0f0f24;
+        color: #00ffe1;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+        .modal-header .modal-title {
+            text-shadow: 0 0 6px #00ffe1;
+        }
+
+    .btn-close-white {
+        filter: invert(1);
+    }
+
+    body {
+        background-color: #0d0d1f;
+        color: #e0e0ff;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .neon-card {
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        background: linear-gradient(145deg, #121230, #0d0d20);
+        box-shadow: 0 0 20px rgba(224, 0, 255, 0.3);
+    }
+
+    .neon-header {
+        font-size: 1.4rem;
+        color: #00ffe1;
+        margin-bottom: 1.5rem;
+        text-shadow: 0 0 8px rgba(0, 255, 255, 0.6);
+        font-weight: 600;
+    }
+
+    .neon-info i {
+        color: #00ffe1;
+        margin-right: 0.5rem;
+    }
+
+    .neon-table-container {
+        background: linear-gradient(145deg, #121230, #0d0d20);
+        padding: 1.5rem;
+        border-radius: 20px;
+        box-shadow: 0 0 20px rgba(224, 0, 255, 0.2);
+    }
+
+    .neon-table th {
+        background-color: #18183a;
+        color: #7efcfb;
+        text-shadow: 0 0 6px rgba(0, 255, 255, 0.3);
+    }
+
+    .neon-table td {
+        background-color: #101025;
+        color: #f0f8ff;
+        transition: background 0.3s, color 0.3s;
+    }
+
+    .neon-table tbody tr:hover td {
+        background-color: #1c1c3a;
+        color: #00ffe1;
+    }
+
+    .btn-glow {
+        background: linear-gradient(to right, #7f00ff, #e100ff);
+        color: white;
+        border: none;
+        padding: 0.6rem 1.5rem;
+        border-radius: 30px;
+        font-weight: 500;
+        font-size: 1rem;
+        box-shadow: 0 0 12px rgba(224, 0, 255, 0.5);
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+    }
+
+        .btn-glow:hover {
+            box-shadow: 0 0 18px rgba(224, 0, 255, 0.8);
+            transform: scale(1.03);
+        }
+</style> *@
+
+<div class="container mt-5">
+    <!-- Info Cards -->
+    <div class="row">
+        <div class="col-md-6 neon-card">
+            <div class="neon-header"><i class="bi bi-person-circle"></i> User Info</div>
+            <p><i class="bi bi-person"></i> <strong>Full Name:</strong> @Model.Person.FirstName @Model.Person.LastName</p>
+            <p><i class="bi bi-phone"></i> <strong>Phone:</strong> @DisplayValue(Model.Person.Phone)</p>
+            <p><i class="bi bi-person-badge"></i> <strong>User Type:</strong> @(Model.Person.UserType == 1 ? "Applicant" : "Guardian")</p>
+            <p><i class="bi bi-award"></i> <strong>Certificate:</strong> @DisplayValue(Model.Person.Certificate?.CertificateName)</p>
+            <p><i class="bi bi-globe"></i> <strong>How Did You Know Us?</strong> @DisplayValue(Model.Person.HowDidYouKnowUs?.HowDidYouKnowUs)</p>
+        </div>
+        <div class="col-md-6 neon-card">
+            <div class="neon-header"><i class="bi bi-envelope-paper"></i> Personal Information</div>
+            <p><i class="bi bi-envelope"></i> <strong>Email:</strong> @DisplayValue(Model.Person.Email)</p>
+            <p><i class="bi bi-credit-card"></i> <strong>National ID:</strong> @DisplayValue(Model.Person.NationalId)</p>
+            <p><i class="bi bi-building"></i> <strong>High School:</strong> @DisplayValue(Model.Person.HighSchool?.HighSchoolName)</p>
+            <p><i class="bi bi-mortarboard"></i> <strong>Major:</strong> @DisplayValue(Model.Person.Major?.MajorInterest)</p>
+            <p><i class="bi bi-calendar-plus"></i> <strong>Created At:</strong> @DisplayDate(Model.Person.CreatedAt)</p>
+        </div>
+    </div>
+
+    <!-- Request Table -->
+    <div class="neon-card neon-table-container">
+        <div class="neon-header"><i class="bi bi-journal-text"></i> Request History</div>
+        @if (!Model.Requests.Any())
+        {
+            <p class="text-muted">No requests yet.</p>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table neon-table align-middle">
+                    <thead>
+                        <tr>
+                            <th>Request Number</th>
+                            <th>Description</th>
+                            <th>Status</th>
+                            <th>Comments</th>
+                            <th>Follow-Up Count</th>
+                            <th>Last Follow-Up</th>
+                            <th>Created By</th>
+                            <th>Created At</th>
+                            <th>Updated By</th>
+                            <th>Updated At</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < Model.Requests.Count; i++)
+                        {
+                            var req = Model.Requests[i];
+                            <tr>
+                                <td>@(i + 1)</td>
+                                <td><i class="bi bi-chat-dots"></i> @DisplayValue(req.Description)</td>
+                                <td><i class="bi bi-check2-circle"></i> @DisplayValue(req.StatusName)</td>
+                                <td><i class="bi bi-chat-left-text"></i> @DisplayValue(req.Comments)</td>
+                                <td>
+                                    @if (req.FollowUpCount > 0)
+                                    {
+                                        <span class="badge bg-info">@req.FollowUpCount</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">0</span>
+                                    }
+
+                                </td>
+                                <td>@DisplayDate(req.LastFollowUpDate)</td>
+                                <td>@DisplayValue(req.CreatedByName)</td>
+                                <td>@DisplayDate(req.CreatedAt)</td>
+                                <td>@DisplayValue(req.UpdatedByName)</td>
+                                <td>@DisplayDate(req.UpdatedAt)</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="text-center my-4">
+        <a asp-action="EditWithRequest" asp-route-id="@Model.Person.PersonId" class="btn-glow me-3">
+            <i class="bi bi-pencil-square"></i> Edit
+        </a>
+        <a asp-action="GetAll" class="btn-glow me-3">
+            <i class="bi bi-arrow-left-circle"></i> Back
+        </a>
+        <button type="button" class="btn-glow" data-bs-toggle="modal" data-bs-target="#createRequestModal">
+            <i class="bi bi-plus-circle"></i> Add Request
+        </button>
+    </div>
+
+    <!-- Modal -->
+    @* <div class="modal fade" id="createRequestModal" tabindex="-1" aria-labelledby="createRequestModalLabel" aria-hidden="true"> *@
+    @*     <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable"> *@
+    @*         <div class="modal-content"> *@
+    @*             <div class="modal-header bg-success text-white"> *@
+    @*                 <h5 class="modal-title" id="createRequestModalLabel">New Request for @Model.Person.FirstName</h5> *@
+    @*                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> *@
+    @*             </div> *@
+    @*             <div class="modal-body" id="createRequestModalBody"> *@
+    @*                 <div class="text-muted">Loading form...</div> *@
+    @*             </div> *@
+    @*         </div> *@
+    @*     </div> *@
+    @* </div> *@
+
+    <!-- MODAL -->
+    <div class="modal fade" id="createRequestModal" tabindex="-1" aria-labelledby="createRequestModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createRequestModalLabel" >
+                        <i class="bi bi-plus-circle-fill"></i> New Request for @Model.Person.FirstName
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body px-4 py-3" id="createRequestModalBody" >
+                    <div class="text-muted">Loading form...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            const personId = @Model.Person.PersonId;
+
+            $('#createRequestModal').on('show.bs.modal', function () {
+                $('#createRequestModalBody').html('<div class="text-muted">Loading form...</div>');
+                $.get('/Request/CreateFromPerson', { personId: personId }, function (data) {
+                    $('#createRequestModalBody').html(data);
+                }).fail(function (xhr, status, error) {
+                    $('#createRequestModalBody').html('<div class="text-danger">Error loading form: ' + error + '</div>');
+                });
+            });
+
+            $('#createRequestModal').on('hidden.bs.modal', function () {
+                $('#createRequestModalBody').html('');
+            });
+
+            $(document).on('submit', '#createRequestForm', function (e) {
+                e.preventDefault();
+                $.ajax({
+                    type: 'POST',
+                    url: $(this).attr('action'),
+                    data: $(this).serialize(),
+                    success: function (res) {
+                        if (res.success) {
+                            window.location.href = '/Persons/Details/' + res.personId;
+                        } else {
+                            $('#createRequestModalBody').html(res);
+                        }
+                    },
+                    error: function () {
+                        alert('An error occurred while saving the request.');
+                    }
+                });
+            });
+        });
+    </script>
+}
+
+<!-- Helpers -->
+@using Microsoft.AspNetCore.Html
+@functions {
+    public IHtmlContent DisplayValue(string? val)
+    {
+        var normalized = val?.Trim()?.ToLower();
+        return string.IsNullOrWhiteSpace(val) || normalized == "n/a" || normalized == "unknown"
+            ? new HtmlString("<span class='badge bg-secondary text-light'>Not Provided</span>")
+            : new HtmlString(System.Net.WebUtility.HtmlEncode(val));
+    }
+
+    public IHtmlContent DisplayDate(DateTime? dt)
+    {
+        return dt.HasValue && dt.Value > DateTime.MinValue
+            ? new HtmlString(dt.Value.ToString("yyyy-MM-dd HH:mm"))
+            : new HtmlString("<span class='badge bg-secondary text-light'>Not Provided</span>");
+    }
+}

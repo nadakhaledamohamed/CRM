@@ -1,0 +1,163 @@
+﻿ @model CRM.Models.DashboardViewModel
+
+@{
+    ViewData["Title"] = "CRM Dashboard";
+}
+
+<div class="container-fluid px-4">
+    <div class="row g-3 mb-4">
+        <div class="col-lg-3 col-sm-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-2">Total Persons</h6>
+                            <h3>@Model.TotalPersons</h3>
+                        </div>
+                        <div class="icon bg-primary text-white rounded-circle p-3">
+                            <i class="bi bi-people"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-sm-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-2">Total Requests</h6>
+                            <h3>@Model.TotalRequests</h3>
+                        </div>
+                        <div class="icon bg-success text-white rounded-circle p-3">
+                            <i class="bi bi-journal-text"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-sm-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-2">Active Requests</h6>
+                            <h3>@Model.ActiveRequests</h3>
+                        </div>
+                        <div class="icon bg-warning text-white rounded-circle p-3">
+                            <i class="bi bi-lightning-charge"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-sm-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-2">Growth</h6>
+                            <h3>+30.56%</h3>
+                        </div>
+                        <div class="icon bg-info text-white rounded-circle p-3">
+                            <i class="bi bi-graph-up"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3">
+        <!-- Recent Requests Table -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Recent Requests</h5>
+                    <select class="form-select form-select-sm w-auto">
+                        <option>This Week</option>
+                        <option>Last Week</option>
+                        <option>This Month</option>
+                    </select>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Person</th>
+                                    <th>Status</th>
+                                    <th>Created</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var request in Model.RecentRequests)
+                                {
+                                    <tr>
+                                        <td>@request.Person?.FirstName @request.Person?.LastName</td>
+                                        @* <td>
+                                            <span class="badge bg-primary">
+                                                @request.StatusHistories.OrderByDescending(sh => sh.UpdatedAt).FirstOrDefault()?.Status?.StatusName
+                                            </span>
+                                        </td> *@
+                                        <td>@request.CreatedAt.ToString("MMM dd, yyyy")</td>
+                                        <td>
+                                            <a href="@Url.Action("Details", "Requests", new { id = request.RequestId })" class="btn btn-sm btn-outline-primary">View</a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions + Timeline -->
+        <div class="col-lg-4">
+            <!-- Quick Actions -->
+            <div class="card shadow-sm mb-3">
+                <div class="card-header bg-white border-0">
+                    <h5 class="mb-0">Quick Actions</h5>
+                </div>
+                <div class="card-body d-grid gap-2">
+                    <a href="@Url.Action("Create", "Persons")" class="btn btn-primary">Add New Person</a>
+                    <a href="@Url.Action("GetAll", "Persons")" class="btn btn-outline-primary">GetAll </a>
+                    <a href="@Url.Action("Index", "Reports")" class="btn btn-outline-secondary">Generate Report</a>
+                    <a href="@Url.Action("GetAll", "Persons")" class="btn btn-outline-success">View Person Cards</a>
+
+                </div>
+            </div>
+
+            <!-- Activity Timeline -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-white border-0">
+                    <h5 class="mb-0">Recent Activity</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        <li class="mb-3">
+                            <div class="fw-bold">John scheduled a call</div>
+                            <div class="small text-muted">Apr 18, 2023 at 12:05 PM</div>
+                        </li>
+                        <li class="mb-3">
+                            <div class="fw-bold">Request created, discovery call completed</div>
+                            <div class="small text-muted">Apr 18, 2023 at 12:05 PM</div>
+                        </li>
+                        <li class="mb-3">
+                            <div class="fw-bold">New person added: Jane Doe</div>
+                            <div class="small text-muted">Apr 17, 2023 at 10:30 AM</div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
