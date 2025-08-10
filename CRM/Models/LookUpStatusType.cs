@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using CRM.FuncModels;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.EntityFrameworkCore;
 
 namespace CRM.Models;
@@ -12,15 +14,20 @@ public partial class LookUpStatusType
 {
     [Key]
     [Column("StatusID")]
+  
     public int StatusId { get; set; }
 
     [StringLength(50)]
     [Unicode(false)]
     public string StatusName { get; set; } = null!;
-
+    public int? FollowUp_SettingID { get; set; }
     public bool RequireFollowUp { get; set; }
     public ICollection<Request>? Requests { get; set; }
 
-    [InverseProperty("Status")]
-    public virtual ICollection<StatusHistory> StatusHistories { get; set; } = new List<StatusHistory>();
+    [ForeignKey("FollowUp_SettingID")]
+    [InverseProperty("LookUpStatusTypes")]
+    [ValidateNever]
+    public virtual FollowUpSettings? FollowUpSettings { get; set; } = null!;
+
+    public virtual ICollection<FollowUp_Log> FollowUp_Logs { get; set; } = new List<FollowUp_Log>();
 }

@@ -4,11 +4,13 @@ namespace CRM.Models
 {
     public class loginVM
     {
-        [Required]
+        [Required(ErrorMessage = "Username is required.")]
+       
         public string Username { get; set; } = string.Empty;
 
-        [Required]
+        [Required(ErrorMessage = "Password is required.")]
         [DataType(DataType.Password)]
         public string Password { get; set; }=string.Empty;
+       
     }
 }

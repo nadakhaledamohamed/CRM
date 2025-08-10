@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
@@ -46,8 +47,8 @@ public partial class User
 
     public int UserCode { get; set; }
 
-    [StringLength(250)]
-    public string CreatedBy { get; set; } = null!;
+
+    public int? CreatedBy { get; set; } 
 
     [InverseProperty("CreatedByCodeNavigation")]
     public virtual ICollection<Person> PersonCreatedByCodeNavigations { get; set; } = new List<Person>();
@@ -66,7 +67,8 @@ public partial class User
     public virtual LookupRole Role { get; set; } = null!;
 
     [InverseProperty("UpdatedByCodeNavigation")]
-    public virtual ICollection<StatusHistory> StatusHistories { get; set; } = new List<StatusHistory>();
+    public virtual ICollection<FollowUp_Log> FollowUp_Logs { get; set; } = new List<FollowUp_Log>();
+    public virtual ICollection<User_org> User_orgs { get; set; } = new List<User_org>();
 }
 
 

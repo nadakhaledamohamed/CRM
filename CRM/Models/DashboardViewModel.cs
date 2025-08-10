@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using CRM.ViewModel;
 
 namespace CRM.Models
 {
@@ -16,5 +17,7 @@ namespace CRM.Models
         public int CompletedRequests { get; set; }
      
         public List<Activity> RecentActivities { get; set; }
+        public List<FollowUpNotificationViewModel>? FollowUpAlerts { get; set; }
+
     }
 }

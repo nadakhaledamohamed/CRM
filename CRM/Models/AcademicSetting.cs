@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace CRM.Models;
@@ -23,6 +24,8 @@ public partial class AcademicSetting
 
     [Column("NumberOf_Interests")]
     public int NumberOfInterests { get; set; }
-
+    public int? Org_id { get; set; }
     public bool IsActive { get; set; }
+    public  ICollection<MajorPerson>? MajorPersons { get; set; }
+    public virtual Lookup_Organization? Org { get; set; }
 }

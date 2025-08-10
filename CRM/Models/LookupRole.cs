@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace CRM.Models;
@@ -15,7 +16,7 @@ public partial class LookupRole
     [Key]
     [Column("RoleID")]
     public int RoleId { get; set; }
-
+    public virtual ICollection<User_org> User_orgs { get; set; } = new List<User_org>();
     [InverseProperty("Role")]
     public virtual ICollection<User> Users { get; set; } = new List<User>();
 }

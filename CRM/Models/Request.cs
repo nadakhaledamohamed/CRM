@@ -31,15 +31,16 @@ public partial class Request
     [Column(TypeName = "datetime")]
     public DateTime? LastFollowUpDate { get; set; }
 
-    public int FollowUpCount { get; set; }
+    public int? FollowUpCount { get; set; }
 
     [Column("PersonID")]
     public int PersonId { get; set; }
 
-    public string Description { get; set; } = null!;
+    //  public string Description { get; set; } = null!;
 
 
-    public int StatusId { get; set; }
+    [Required(ErrorMessage = "Status is required")]
+    public int? StatusId { get; set; }
 
     // Navigation Property
     [ValidateNever]
@@ -54,7 +55,16 @@ public partial class Request
     public virtual Person Person { get; set; } = null!;
 
     [InverseProperty("Request")]
-    public virtual ICollection<StatusHistory> StatusHistories { get; set; } = new List<StatusHistory>();
+    public virtual ICollection<FollowUp_Log> FollowUp_Logs { get; set; } = new List<FollowUp_Log>();
+
+
+    [Column("ReasonID")]
+    [Required(ErrorMessage = "Reason Description is required")]
+    public int? ReasonID { get; set; }
+
+    [ForeignKey("ReasonID")]
+    [InverseProperty("Requests")] 
+    public virtual Lookup_ReasonDescription? Reason { get; set; }
 
     [ForeignKey("UpdatedByCode")]
     [InverseProperty("RequestUpdatedByCodeNavigations")]

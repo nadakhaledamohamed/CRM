@@ -17,6 +17,7 @@ public partial class LookupMajor
     [Column("MajorID")]
     public int MajorId { get; set; }
 
-    [InverseProperty("Major")]
-    public virtual ICollection<Person> People { get; set; } = new List<Person>();
+    //[InverseProperty("Major")]
+    //public virtual ICollection<Person> People { get; set; } = new List<Person>();
+    public virtual ICollection<MajorPerson>? MajorPersons { get; set; }
 }
