@@ -6,126 +6,178 @@
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
 <link href="~/css/light.css" rel="stylesheet" />
 
-@* <link href="~/css/dark.css" rel="stylesheet" /> *@
-@* <style>
-    .modal-content {
-        border-radius: 20px;
-        background: linear-gradient(145deg, #121230, #0d0d20);
-        box-shadow: 0 0 25px rgba(224, 0, 255, 0.3);
-    }
-
-    .modal-header {
-        background-color: #0f0f24;
-        color: #00ffe1;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    }
-
-        .modal-header .modal-title {
-            text-shadow: 0 0 6px #00ffe1;
-        }
-
-    .btn-close-white {
-        filter: invert(1);
-    }
-
-    body {
-        background-color: #0d0d1f;
-        color: #e0e0ff;
-        font-family: 'Segoe UI', sans-serif;
-    }
-
-    .neon-card {
-        border-radius: 20px;
-        padding: 2rem;
-        margin-bottom: 2rem;
-        background: linear-gradient(145deg, #121230, #0d0d20);
-        box-shadow: 0 0 20px rgba(224, 0, 255, 0.3);
-    }
-
-    .neon-header {
-        font-size: 1.4rem;
-        color: #00ffe1;
-        margin-bottom: 1.5rem;
-        text-shadow: 0 0 8px rgba(0, 255, 255, 0.6);
-        font-weight: 600;
-    }
-
-    .neon-info i {
-        color: #00ffe1;
-        margin-right: 0.5rem;
-    }
-
-    .neon-table-container {
-        background: linear-gradient(145deg, #121230, #0d0d20);
-        padding: 1.5rem;
-        border-radius: 20px;
-        box-shadow: 0 0 20px rgba(224, 0, 255, 0.2);
-    }
-
-    .neon-table th {
-        background-color: #18183a;
-        color: #7efcfb;
-        text-shadow: 0 0 6px rgba(0, 255, 255, 0.3);
-    }
-
-    .neon-table td {
-        background-color: #101025;
-        color: #f0f8ff;
-        transition: background 0.3s, color 0.3s;
-    }
-
-    .neon-table tbody tr:hover td {
-        background-color: #1c1c3a;
-        color: #00ffe1;
-    }
-
-    .btn-glow {
-        background: linear-gradient(to right, #7f00ff, #e100ff);
-        color: white;
-        border: none;
-        padding: 0.6rem 1.5rem;
-        border-radius: 30px;
-        font-weight: 500;
-        font-size: 1rem;
-        box-shadow: 0 0 12px rgba(224, 0, 255, 0.5);
-        transition: all 0.3s ease;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
+<style>
+    .edit-link.disabled {
+        color: #6c757d;
         text-decoration: none;
+        cursor: not-allowed;
+        opacity: 0.6;
     }
 
-        .btn-glow:hover {
-            box-shadow: 0 0 18px rgba(224, 0, 255, 0.8);
-            transform: scale(1.03);
+        .edit-link.disabled:hover {
+            color: #6c757d;
+            text-decoration: none;
         }
-</style> *@
+    .compact-date .badge {
+        font-size: 0.65rem !important;
+    }
+
+    .edit-link {
+        color: #28a745;
+    }
+
+        .edit-link:hover {
+            background-color: rgba(40, 167, 69, 0.1);
+        }
+    .compact-table {
+        font-size: 0.875rem;
+    }
+
+        .compact-table th,
+        .compact-table td {
+            padding: 0.5rem 0.75rem;
+            vertical-align: middle;
+        }
+
+    .action-links a {
+        font-size: 0.8rem;
+        text-decoration: none;
+        margin-right: 0.5rem;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        transition: all 0.2s ease;
+    }
+
+        .action-links a:hover {
+            text-decoration: underline;
+            transform: translateY(-1px);
+        }
+
+    .follow-up-link {
+        color: #ffc107;
+    }
+
+        .follow-up-link:hover {
+            background-color: rgba(255, 193, 7, 0.1);
+        }
+
+    .details-link {
+        color: #17a2b8;
+    }
+
+        .details-link:hover {
+            background-color: rgba(23, 162, 184, 0.1);
+        }
+
+    .action-links {
+        white-space: nowrap;
+    }
+
+    .status-icon {
+        font-size: 1.1em;
+        margin-left: 0.5rem;
+    }
+
+    .status-completed {
+        color: #28a745;
+    }
+
+    .status-not-applicable {
+        color: #6c757d;
+    }
+
+    .status-manual-available {
+        color: #17a2b8;
+    }
+
+    .status-text {
+        font-size: 0.75rem;
+        margin-left: 0.25rem;
+        font-weight: 500;
+    }
+
+    .table-responsive {
+        border-radius: 0.5rem;
+    }
+
+    .compact-date {
+        white-space: nowrap;
+        font-size: 0.8rem;
+    }
+
+    .compact-badge {
+        font-size: 0.7rem;
+        padding: 0.25em 0.5em;
+    }
+
+    .badge-light-muted {
+        background-color: #f0f0f0;
+        color: #666;
+        font-weight: 500;
+        border-radius: 0.5rem;
+        padding: 0.25rem 0.5rem;
+    }
+</style>
 
 <div class="container mt-5">
+    @Html.AntiForgeryToken()
     <!-- Info Cards -->
-    <div class="row">
-        <div class="col-md-6 neon-card">
-            <div class="neon-header"><i class="bi bi-person-circle"></i> User Info</div>
-            <p><i class="bi bi-person"></i> <strong>Full Name:</strong> @Model.Person.FirstName @Model.Person.LastName</p>
-            <p><i class="bi bi-phone"></i> <strong>Phone:</strong> @DisplayValue(Model.Person.Phone)</p>
-            <p><i class="bi bi-person-badge"></i> <strong>User Type:</strong> @(Model.Person.UserType == 1 ? "Applicant" : "Guardian")</p>
+    <div class="row g-4 mb-4">
+        <div class="col-md-6 neon-card h-100">
+            <h5 class="neon-header mb-3">
+                <i class="bi bi-person-circle me-2"></i> User Info
+            </h5>
+
+            <p><i class="bi bi-person-badge"></i> <strong>User Type:</strong> @(Model.Person.UserType == 1 ? "Lead" : "Guardian")</p>
             <p><i class="bi bi-award"></i> <strong>Certificate:</strong> @DisplayValue(Model.Person.Certificate?.CertificateName)</p>
-            <p><i class="bi bi-globe"></i> <strong>How Did You Know Us?</strong> @DisplayValue(Model.Person.HowDidYouKnowUs?.HowDidYouKnowUs)</p>
+            <p></p>
+
+            <p><i class="bi bi-globe"></i> <strong>How Did You Know Us?</strong> @DisplayValue(ViewBag.HowDidYouKnowUsDisplay)</p>  
+            @{
+                var majorsList = ViewBag.MajorInterests as List<string>;
+            }
+            @if (majorsList != null && majorsList.Any())
+            {
+                <p><i class="bi bi-mortarboard"></i> <strong>Major Interest(s):</strong></p>
+                <div class="d-flex flex-column ms-3">
+                    @for (int i = 0; i < majorsList.Count; i++)
+                    {
+                        <div class="mb-1">
+                            <span class="fw-medium">@majorsList[i]</span>
+                            <span class="badge @(i == 0 ? "bg-primary" : "bg-secondary") ms-2">
+                                @(i == 0 ? "Primary" : "Secondary")
+                            </span>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <p><i class="bi bi-mortarboard"></i> <strong>Major:</strong>@DisplayValue(null)</p>
+            }
         </div>
-        <div class="col-md-6 neon-card">
-            <div class="neon-header"><i class="bi bi-envelope-paper"></i> Personal Information</div>
+
+        <div class="col-md-6 neon-card h-100">
+            <h5 class="neon-header mb-3">
+                <i class="bi bi-person-circle me-2"></i> Personal Info
+            </h5>
+            <p><i class="bi bi-person"></i> <strong>Full Name:</strong> @Model.Person.FirstName</p>
             <p><i class="bi bi-envelope"></i> <strong>Email:</strong> @DisplayValue(Model.Person.Email)</p>
+            <p><i class="bi bi-phone"></i> <strong>Phone:</strong> @DisplayValue(Model.Person.Phone)</p> 
+            <p><i class="bi bi-phone"></i> <strong>whats App:</strong> @DisplayValue(Model.Person.whatsApp)</p>
             <p><i class="bi bi-credit-card"></i> <strong>National ID:</strong> @DisplayValue(Model.Person.NationalId)</p>
-            <p><i class="bi bi-building"></i> <strong>High School:</strong> @DisplayValue(Model.Person.HighSchool?.HighSchoolName)</p>
-            <p><i class="bi bi-mortarboard"></i> <strong>Major:</strong> @DisplayValue(Model.Person.Major?.MajorInterest)</p>
-            <p><i class="bi bi-calendar-plus"></i> <strong>Created At:</strong> @DisplayDate(Model.Person.CreatedAt)</p>
+            <p><i class="bi bi-flag"></i> <strong>Nationality:</strong> @DisplayValue(Model.Person.Nationality?.NationalityName)</p>
+            <p> <i class="bi bi-building"></i> <strong>High School:</strong> @DisplayValue(Model.Person.HighSchool?.HighSchoolName)</p>
         </div>
     </div>
 
-    <!-- Request Table -->
+    
     <div class="neon-card neon-table-container">
         <div class="neon-header"><i class="bi bi-journal-text"></i> Request History</div>
         @if (!Model.Requests.Any())
@@ -135,46 +187,156 @@
         else
         {
             <div class="table-responsive">
-                <table class="table neon-table align-middle">
+                <table class="table neon-table compact-table align-middle">
                     <thead>
                         <tr>
-                            <th>Request Number</th>
-                            <th>Description</th>
-                            <th>Status</th>
-                            <th>Comments</th>
-                            <th>Follow-Up Count</th>
-                            <th>Last Follow-Up</th>
-                            <th>Created By</th>
-                            <th>Created At</th>
-                            <th>Updated By</th>
-                            <th>Updated At</th>
+                            <th style="width: 80px;">#</th>
+                            <th style="width: 200px;">Reason</th>
+                            <th style="width: 120px;">Status</th>
+                            <th style="width: 150px;">Comments</th>
+                            <th style="width: 90px;">Follow-Ups</th>
+                            <th style="width: 110px;">Last F/U</th>
+                            <th style="width: 100px;">Created By</th>
+                            <th style="width: 110px;">Created At</th>
+                            <th style="width: 100px;">Updated By</th>
+                            <th style="width: 110px;">Updated At</th>
+                            <th style="width: 180px;">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         @for (int i = 0; i < Model.Requests.Count; i++)
                         {
                             var req = Model.Requests[i];
+                           
+                                // Get follow-up data for this request
+                                var followUpData = ViewBag.RequestFollowUpData as Dictionary<int, object>;
+                                var requestFollowUpInfo = followUpData?.ContainsKey(req.RequestId) == true ? followUpData[req.RequestId] : null;
+                                
+                                // Extract follow-up properties safely
+                                bool canFollowUp = false;
+                                bool requiresFollowUp = false;
+                                bool isManualFollowUp = false;
+                                bool maxReached = false;
+                                string followUpStatusText = "Unknown";
+                                
+                                if (requestFollowUpInfo != null)
+                                {
+                                    var infoType = requestFollowUpInfo.GetType();
+                                    canFollowUp = (bool)(infoType.GetProperty("CanFollowUp")?.GetValue(requestFollowUpInfo) ?? false);
+                                    requiresFollowUp = (bool)(infoType.GetProperty("RequiresFollowUp")?.GetValue(requestFollowUpInfo) ?? false);
+                                    maxReached = (bool)(infoType.GetProperty("MaxFollowUpsReached")?.GetValue(requestFollowUpInfo) ?? false);
+                                    followUpStatusText = (string)(infoType.GetProperty("StatusText")?.GetValue(requestFollowUpInfo) ?? "Unknown");
+                                    
+                                    var settings = infoType.GetProperty("Settings")?.GetValue(requestFollowUpInfo);
+                                    if (settings != null)
+                                    {
+                                        var settingsType = settings.GetType();
+                                        var intervalDays = (int)(settingsType.GetProperty("FollowUpIntervalDays")?.GetValue(settings) ?? 0);
+                                        isManualFollowUp = intervalDays <= 0;
+                                    }
+                                }
+                           
+                            
                             <tr>
                                 <td>@(i + 1)</td>
-                                <td><i class="bi bi-chat-dots"></i> @DisplayValue(req.Description)</td>
-                                <td><i class="bi bi-check2-circle"></i> @DisplayValue(req.StatusName)</td>
-                                <td><i class="bi bi-chat-left-text"></i> @DisplayValue(req.Comments)</td>
                                 <td>
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-chat-dots me-2"></i>
+                                        <span title="@req.ReasonDescription">@(req.ReasonDescription?.Length > 30 ? req.ReasonDescription.Substring(0, 30) + "..." : req.ReasonDescription ?? "N/A")</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-check2-circle me-2"></i>
+                                        @DisplayValue(req.StatusName)
+                                    </div>
+                                </td>
+                                <td title="@req.Comments">
+                                    <i class="bi bi-chat-left-text me-2"></i>
+                                    @(req.Comments?.Length > 25 ? req.Comments.Substring(0, 25) + "..." : req.Comments ?? "N/A")
+                                </td>
+                                <td class="text-center">
                                     @if (req.FollowUpCount > 0)
                                     {
-                                        <span class="badge bg-info">@req.FollowUpCount</span>
+                                        <span class="badge bg-info compact-badge">@req.FollowUpCount</span>
                                     }
                                     else
                                     {
-                                        <span class="badge bg-secondary">0</span>
+                                        <span class="badge bg-secondary compact-badge">0</span>
                                     }
-
                                 </td>
-                                <td>@DisplayDate(req.LastFollowUpDate)</td>
+                                <td class="compact-date">@DisplayDateCompact(req.LastFollowUpDate)</td>
                                 <td>@DisplayValue(req.CreatedByName)</td>
-                                <td>@DisplayDate(req.CreatedAt)</td>
-                                <td>@DisplayValue(req.UpdatedByName)</td>
-                                <td>@DisplayDate(req.UpdatedAt)</td>
+                                <td class="compact-date">@DisplayDateCompact(req.CreatedAt)</td>
+                                <td class="compact-date">
+                                    <span class="compact-text">@DisplayValue(req.UpdatedByName)</span>
+                                </td>
+                                <td class="compact-date">@DisplayDateCompact(req.UpdatedAt)</td>
+                                <td class="action-links">
+                                    @* Edit Link - Conditionally show/hide based on follow-ups *@
+                                    @if (!req.HasFollowUps)
+                                    {
+                                        <a asp-controller="Persons"
+                                           asp-action="EditRequest"
+                                           asp-route-id="@req.RequestId"
+                                           class="edit-link"
+                                           title="Edit Request">
+                                            <i class="bi bi-pencil-square"></i> Edit
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <span class="edit-link disabled" title="Cannot edit request with follow-ups">
+                                            <i class="bi bi-pencil-square"></i> Edit
+                                        </span>
+                                    }
+                                    
+                                    <!-- Follow-Up Details Link -->
+                                    <a asp-controller="FollowUp"
+                                       asp-action="FollowUpDetails"
+                                       asp-route-id="@req.RequestId"
+                                       class="details-link"
+                                       title="View Follow-Up Details">
+                                        <i class="bi bi-info-circle"></i> Details
+                                    </a>
+
+                                    <!-- Follow-Up Link or Status - Using Status-Specific Logic -->
+                                    @if (!requiresFollowUp)
+                                    {
+                                        <!-- Status doesn't require follow-up -->
+                                        <i class="bi bi-x-circle-fill status-icon status-not-applicable" title="Follow-up not required for this status"></i>
+                                        <span class="status-text status-not-applicable">Not Required</span>
+                                    }
+                                    else if (maxReached)
+                                    {
+                                        <!-- Max follow-ups reached -->
+                                        <i class="bi bi-check-circle-fill status-icon status-completed" title="Maximum follow-ups completed"></i>
+                                        <span class="status-text status-completed">Complete</span>
+                                    }
+                                    else if (canFollowUp)
+                                    {
+                                        <!-- Can follow up - show button -->
+                                        <a href="#"
+                                           class="follow-up-link mark-followup-btn"
+                                           data-request-id="@req.RequestId"
+                                           title="@(isManualFollowUp ? "Add Manual Follow-Up" : "Add Scheduled Follow-Up")"
+                                           onclick="openFollowUpModal(@req.RequestId); return false;">
+                                            <i class="bi bi-plus-circle"></i> Follow-Up
+                                        </a>
+                                        
+                                        @if (isManualFollowUp)
+                                        {
+                                            <i class="bi bi-person-check status-icon status-manual-available" title="Problem Solving follow-up available anytime"></i>
+                                            <span class="status-text status-manual-available">Problem Solving</span>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <!-- Cannot follow up for some other reason -->
+                                        <i class="bi bi-exclamation-circle status-icon status-not-applicable" title="@followUpStatusText"></i>
+                                        <span class="status-text status-not-applicable">@followUpStatusText</span>
+                                    }
+                                </td>
                             </tr>
                         }
                     </tbody>
@@ -185,8 +347,8 @@
 
     <!-- Action Buttons -->
     <div class="text-center my-4">
-        <a asp-action="EditWithRequest" asp-route-id="@Model.Person.PersonId" class="btn-glow me-3">
-            <i class="bi bi-pencil-square"></i> Edit
+        <a asp-action="EditPerson" asp-route-id="@Model.Person.PersonId" class="btn-glow me-3">
+            <i class="bi bi-pencil-square"></i> Edit Person Data
         </a>
         <a asp-action="GetAll" class="btn-glow me-3">
             <i class="bi bi-arrow-left-circle"></i> Back
@@ -195,74 +357,276 @@
             <i class="bi bi-plus-circle"></i> Add Request
         </button>
     </div>
+</div>
 
-    <!-- Modal -->
-    @* <div class="modal fade" id="createRequestModal" tabindex="-1" aria-labelledby="createRequestModalLabel" aria-hidden="true"> *@
-    @*     <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable"> *@
-    @*         <div class="modal-content"> *@
-    @*             <div class="modal-header bg-success text-white"> *@
-    @*                 <h5 class="modal-title" id="createRequestModalLabel">New Request for @Model.Person.FirstName</h5> *@
-    @*                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> *@
-    @*             </div> *@
-    @*             <div class="modal-body" id="createRequestModalBody"> *@
-    @*                 <div class="text-muted">Loading form...</div> *@
-    @*             </div> *@
-    @*         </div> *@
-    @*     </div> *@
-    @* </div> *@
-
-    <!-- MODAL -->
-    <div class="modal fade" id="createRequestModal" tabindex="-1" aria-labelledby="createRequestModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="createRequestModalLabel" >
-                        <i class="bi bi-plus-circle-fill"></i> New Request for @Model.Person.FirstName
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body px-4 py-3" id="createRequestModalBody" >
-                    <div class="text-muted">Loading form...</div>
-                </div>
+<!--Create Request Modal HTML -->
+<div class="modal fade" id="createRequestModal" tabindex="-1" aria-labelledby="createRequestModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createRequestModalLabel">
+                    <i class="bi bi-plus-circle-fill"></i> New Request for @Model.Person.FirstName
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body px-4 py-3" id="createRequestModalBody">
+                <div class="text-muted">Loading form...</div>
             </div>
         </div>
     </div>
-
 </div>
+
+<!-- Create Follow-Up Modal -->
+<div class="modal fade" id="createFollowUpModal" tabindex="-1" aria-labelledby="createFollowUpModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createFollowUpModalLabel">
+                    <i class="bi bi-journal-plus"></i> Follow-Up Entry
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body px-4 py-3" id="createFollowUpModalBody">
+                <div class="text-muted">Loading form...</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 
 @section Scripts {
     <script>
+        // Global function declarations first
+        function openFollowUpModal(requestId) {
+            if (!requestId) {
+                alert("Missing request ID");
+                return;
+            }
+
+            $('#createFollowUpModalBody').html('<div class="text-center"><div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div></div>');
+            $('#createFollowUpModal').modal('show');
+
+            $.ajax({
+                url: '/FollowUp/CreateFollowUpForm',
+                type: 'GET',
+                data: { requestId: requestId },
+                success: function (data) {
+                    $('#createFollowUpModalBody').html(data);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error loading follow-up form:', error);
+                    $('#createFollowUpModalBody').html('<div class="alert alert-danger">Error loading form: ' + error + '</div>');
+                }
+            });
+        }
+
+        function markFollowUpDone(requestId) {
+            if (!requestId) {
+                alert("Missing request ID");
+                return;
+            }
+
+            if (!confirm("Mark this request as followed up?")) return;
+
+            // Get the CSRF token
+            const token = document.querySelector("input[name='__RequestVerificationToken']").value;
+
+            // Disable the link immediately to prevent double clicks
+            const link = document.querySelector(`[data-request-id="${requestId}"].mark-followup-btn`);
+            if (link) {
+                link.style.pointerEvents = 'none';
+                link.innerHTML = '<i class="spinner-border spinner-border-sm me-1"></i> Processing...';
+            }
+
+            fetch('/Persons/MarkFollowUpDone', {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'RequestVerificationToken': token
+                },
+                body: `id=${requestId}&__RequestVerificationToken=${encodeURIComponent(token)}`
+            })
+            .then(res => {
+                if (!res.ok) throw new Error("Follow-up failed.");
+                return res.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    // Update the link to show completion
+                    if (link) {
+                        link.parentElement.innerHTML = '<a asp-controller="FollowUp" asp-action="FollowUpDetails" asp-route-id="' + requestId + '" class="details-link" title="View Follow-Up Details"><i class="bi bi-info-circle"></i> Details</a><i class="bi bi-check-circle-fill status-icon status-completed" title="All follow-ups completed"></i><span class="status-text status-completed">Done</span>';
+                    }
+
+                    // Show success message
+                    if (typeof toastr !== 'undefined') {
+                        toastr.success('Follow-up marked as completed successfully!');
+                    } else {
+                        alert('Follow-up marked as completed successfully!');
+                    }
+
+                    // reload the page to update the follow-up count
+                    location.reload();
+                } else {
+                    // Re-enable link on failure
+                    if (link) {
+                        link.style.pointerEvents = 'auto';
+                        link.innerHTML = '<i class="bi bi-plus-circle"></i> Follow-Up';
+                    }
+
+                    if (typeof toastr !== 'undefined') {
+                        toastr.error(data.message || "Failed to process follow-up.");
+                    } else {
+                        alert(data.message || "Failed to process follow-up.");
+                    }
+                }
+            })
+            .catch(err => {
+                console.error(err);
+
+                // Re-enable link on error
+                if (link) {
+                    link.style.pointerEvents = 'auto';
+                    link.innerHTML = '<i class="bi bi-plus-circle"></i> Follow-Up';
+                }
+
+                if (typeof toastr !== 'undefined') {
+                    toastr.error("Error marking follow-up. Please try again.");
+                } else {
+                    alert("Error marking follow-up. Please try again.");
+                }
+            });
+        }
+
+        // Assign functions to window object after declaration
+        window.markFollowUpDone = markFollowUpDone;
+        window.openFollowUpModal = openFollowUpModal;
+
         $(document).ready(function () {
             const personId = @Model.Person.PersonId;
 
-            $('#createRequestModal').on('show.bs.modal', function () {
-                $('#createRequestModalBody').html('<div class="text-muted">Loading form...</div>');
-                $.get('/Request/CreateFromPerson', { personId: personId }, function (data) {
-                    $('#createRequestModalBody').html(data);
-                }).fail(function (xhr, status, error) {
-                    $('#createRequestModalBody').html('<div class="text-danger">Error loading form: ' + error + '</div>');
+            // Submit Follow-Up Form with toast and animation
+            $(document).on('submit', '#createFollowUpForm', function (e) {
+                e.preventDefault();
+
+                const $form = $(this);
+                const $submitBtn = $form.find('button[type="submit"]');
+
+                $submitBtn.prop('disabled', true).html('<i class="spinner-border spinner-border-sm me-2"></i>Saving...');
+
+                $.ajax({
+                    type: 'POST',
+                    url: $form.attr('action'),
+                    data: $form.serialize(),
+                    success: function (response) {
+                        if (response.success) {
+                            $('#createFollowUpModal').modal('hide').on('hidden.bs.modal', function () {
+                                $('.modal-backdrop').remove();
+                                $('body').removeClass('modal-open');
+                                $('#createFollowUpModalBody').html('<div class="text-muted">Loading form...</div>');
+                            });
+
+                            // Show toast if available
+                            if (typeof toastr !== 'undefined') {
+                                toastr.success('Follow-up saved successfully!');
+                            } else {
+                                alert('Follow-up saved successfully!');
+                            }
+
+                            // Optional: animate the table row or mark visually (find by requestId)
+                            const requestId = $form.find('input[name="RequestID"]').val();
+                            const row = $(`[data-request-id="${requestId}"]`).closest('tr');
+
+                            if (row.length) {
+                                row.addClass('table-success');
+                                const actionsCell = row.find('td:last');
+
+                                actionsCell.html(`
+                                    <a href="/FollowUp/FollowUpDetails/${requestId}" class="details-link" title="View Follow-Up Details">
+                                        <i class="bi bi-info-circle"></i> Details
+                                    </a>
+                                    <i class="bi bi-check-circle-fill status-icon status-completed" title="Follow-up saved successfully"></i>
+                                    <span class="status-text status-completed">Saved</span>
+                                `);
+                            }
+
+                            // reload after short delay (if required)
+                            setTimeout(() => location.reload(), 1500);
+
+                        } else {
+                            $('#createFollowUpModalBody').html(response); // Redisplay form with errors
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Follow-Up save error:', error);
+                        alert('Error saving follow-up: ' + error);
+                    },
+                    complete: function () {
+                        $submitBtn.prop('disabled', false).html('<i class="bi bi-save"></i> Save Follow-Up');
+                    }
                 });
             });
 
-            $('#createRequestModal').on('hidden.bs.modal', function () {
-                $('#createRequestModalBody').html('');
+            // Load create request form when modal opens
+            $('#createRequestModal').on('show.bs.modal', function (e) {
+                console.log('Modal opening for person ID:', personId);
+                $('#createRequestModalBody').html('<div class="text-center"><div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div></div>');
+
+                $.ajax({
+                    url: '/Request/CreateFromPerson',
+                    type: 'GET',
+                    data: { personId: personId },
+                    success: function (data) {
+                        $('#createRequestModalBody').html(data);
+                        console.log('Form loaded successfully');
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error loading form:', error);
+                        $('#createRequestModalBody').html('<div class="alert alert-danger">Error loading form: ' + error + '</div>');
+                    }
+                });
             });
 
+            // Clear modal content when closed
+            $('#createRequestModal').on('hidden.bs.modal', function () {
+                $('#createRequestModalBody').html('<div class="text-muted">Loading form...</div>');
+            });
+
+            // Handle form submission
             $(document).on('submit', '#createRequestForm', function (e) {
                 e.preventDefault();
+                console.log('Form submitted');
+
+                const $form = $(this);
+                const $submitButton = $form.find('button[type="submit"]');
+
+                // Disable submit button to prevent double submission
+                $submitButton.prop('disabled', true).html('<i class="spinner-border spinner-border-sm me-2"></i>Saving...');
+
                 $.ajax({
                     type: 'POST',
-                    url: $(this).attr('action'),
-                    data: $(this).serialize(),
-                    success: function (res) {
-                        if (res.success) {
-                            window.location.href = '/Persons/Details/' + res.personId;
+                    url: $form.attr('action'),
+                    data: $form.serialize(),
+                    success: function (response) {
+                        console.log('Form submission response:', response);
+
+                        if (response.success) {
+                            $('#createRequestModal').modal('hide');
+                            // Refresh the page or update the requests table
+                            location.reload();
                         } else {
-                            $('#createRequestModalBody').html(res);
+                            // If validation errors, update the modal body with the returned partial view
+                            $('#createRequestModalBody').html(response);
                         }
                     },
-                    error: function () {
-                        alert('An error occurred while saving the request.');
+                    error: function (xhr, status, error) {
+                        console.error('Form submission error:', error);
+                        alert('An error occurred while saving the request: ' + error);
+                    },
+                    complete: function () {
+                        // Re-enable submit button
+                        $submitButton.prop('disabled', false).html('<i class="bi bi-save"></i> Save Request');
                     }
                 });
             });
@@ -276,8 +640,8 @@
     public IHtmlContent DisplayValue(string? val)
     {
         var normalized = val?.Trim()?.ToLower();
-        return string.IsNullOrWhiteSpace(val) || normalized == "n/a" || normalized == "unknown"
-            ? new HtmlString("<span class='badge bg-secondary text-light'>Not Provided</span>")
+        return string.IsNullOrWhiteSpace(val) || normalized == "n/a" || normalized == "unknown" || normalized == "not specified"
+            ? new HtmlString("<span class='badge badge-light-muted'>Not Provided</span>")
             : new HtmlString(System.Net.WebUtility.HtmlEncode(val));
     }
 
@@ -285,6 +649,13 @@
     {
         return dt.HasValue && dt.Value > DateTime.MinValue
             ? new HtmlString(dt.Value.ToString("yyyy-MM-dd HH:mm"))
-            : new HtmlString("<span class='badge bg-secondary text-light'>Not Provided</span>");
+            : new HtmlString("<span class='badge badge-light-muted'>Not Provided</span>");
+    }
+
+    public IHtmlContent DisplayDateCompact(DateTime? dt)
+    {
+        return dt.HasValue && dt.Value > DateTime.MinValue
+            ? new HtmlString(dt.Value.ToString("MM/dd/yy<br/>HH:mm"))
+            : new HtmlString("<span class='badge badge-light-muted'>Not Provided</span>");
     }
 }

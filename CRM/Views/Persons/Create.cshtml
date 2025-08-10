@@ -7,109 +7,120 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-@* <link href="~/css/dark.css" rel="stylesheet" />
- *@
- <link href="~/css/light.css" rel="stylesheet" />
+<link href="~/css/light.css" rel="stylesheet" />
 
-
-@* <style>
-    body {
-        background-color: #0d0d1f;
-        color: #e0e0ff;
+<style>
+    /* Custom searchable dropdown styling */
+    .search-dropdown-container {
+        position: relative;
+        width: 100%;
     }
 
-    .neon-form {
-        background: linear-gradient(145deg, #121230, #0d0d20);
-        border-radius: 20px;
-        padding: 2rem;
-        color: #e0e0ff;
-        box-shadow: 0 0 20px rgba(224, 0, 255, 0.15);
+    .search-input {
+        width: 100%;
+        padding: 0.375rem 2rem 0.375rem 0.75rem;
+        border: 1px solid #ced4da;
+        border-radius: 0.375rem;
+        background-color: #fff;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m1 6 7 7 7-7'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 0.75rem center;
+        background-size: 16px 12px;
+        cursor: pointer;
     }
 
-    .nav-pills .nav-link {
-        color: #ccc;
-        border-radius: 50px;
-        transition: all 0.3s ease;
-    }
-
-        .nav-pills .nav-link.active {
-            background: linear-gradient(to right, #7f00ff, #e100ff);
-            color: #fff;
-            box-shadow: 0 0 10px rgba(224, 0, 255, 0.6);
+        .search-input:focus {
+            border-color: #86b7fe;
+            outline: 0;
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
         }
 
-    .form-label {
-        color: #7efcfb;
-        font-weight: 500;
-        text-shadow: 0 0 6px rgba(103, 58, 183, 0.3);
+    .search-dropdown {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: #fff;
+        border: 1px solid #ced4da;
+        border-top: none;
+        border-radius: 0 0 0.375rem 0.375rem;
+        max-height: 200px;
+        overflow-y: auto;
+        z-index: 1050;
+        display: none;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
     }
 
-    .form-control,
-    .form-select {
-        background-color: #1a1a3d;
-        border: 1px solid #333356;
-        color: #ffffff;
-        box-shadow: inset 0 0 6px rgba(103, 58, 183, 0.3);
+    .search-option {
+        padding: 0.5rem 0.75rem;
+        cursor: pointer;
+        border-bottom: 1px solid #f8f9fa;
+        transition: background-color 0.15s ease-in-out;
     }
 
-        .form-control:focus,
-        .form-select:focus {
-            border-color: #00ffe1;
-            box-shadow: 0 0 8px rgba(0, 255, 255, 0.6);
+        .search-option:last-child {
+            border-bottom: none;
         }
 
-    .btn-glow {
-        background: linear-gradient(to right, #7f00ff, #e100ff);
-        color: white;
-        border: none;
-        padding: 0.6rem 1.5rem;
-        border-radius: 30px;
-        box-shadow: 0 0 12px rgba(224, 0, 255, 0.5);
-        transition: all 0.3s ease;
-    }
-
-        .btn-glow:hover {
-            box-shadow: 0 0 18px rgba(224, 0, 255, 0.8);
-            transform: scale(1.03);
+        .search-option:hover {
+            background-color: #f8f9fa;
         }
 
-    .btn-cancel {
-        background-color: #2c2c4a;
-        color: #bbb;
-        padding: 0.6rem 1.5rem;
-        border-radius: 30px;
-    }
-
-        .btn-cancel:hover {
-            background-color: #444465;
+        .search-option.highlighted {
+            background-color: #0d6efd;
             color: #fff;
         }
 
-    .tab-pane {
-        animation: fadeIn 0.5s ease;
+        .search-option.selected {
+            background-color: #e7f3ff;
+            color: #0d6efd;
+            font-weight: 500;
+        }
+
+    .no-results {
+        padding: 0.5rem 0.75rem;
+        color: #6c757d;
+        font-style: italic;
     }
 
-    @@keyframes fadeIn {
-        from
-
-    {
-        opacity: 0;
-        transform: translateY(10px);
+    /* Enhanced duplicate person alert styling only */
+    .duplicate-person-alert {
+        border-left: 4px solid #ffc107;
+        background-color: #fff3cd;
     }
 
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-
-    }
-</style> *@
+    /* REMOVED: validation-enhanced warning icon styles */
+</style>
 
 <div class="container mt-5 neon-form">
+    <a asp-action="getall" asp-controller="persons" class="btn-glow me-3">
+        <i class="bi bi-arrow-left-circle"></i> Back
+    </a>
     <h2 class="text-center mb-4"><i class="bi bi-person-plus-fill"></i> Create Person & Request</h2>
 
-    <form asp-action="CreateWithRequest" asp-controller="Persons" method="post">
+    <form asp-action="Create" asp-controller="Persons" method="post">
         <div asp-validation-summary="ModelOnly" class="text-danger mb-4"></div>
+
+        @* Enhanced duplicate person notification *@
+        @if (ViewBag.ExistingPersonId != null)
+        {
+            <div class="alert alert-warning alert-dismissible fade show mb-4" role="alert">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    <div class="flex-grow-1">
+                        <strong>Person Already Exists!</strong><br>
+                        <span>@ViewBag.DuplicateMessage</span>
+                    </div>
+                    <div class="ms-3">
+                        <a href="@Url.Action("Details", "Persons", new { id = ViewBag.ExistingPersonId })"
+                           class="btn btn-primary btn-sm">
+                            <i class="bi bi-eye"></i> View Details
+                        </a>
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
 
         <ul class="nav nav-pills mb-4 justify-content-center" id="pills-tab" role="tablist">
             <li class="nav-item" role="presentation">
@@ -124,179 +135,846 @@
         </ul>
 
         <div class="tab-content" id="pills-tabContent">
-            <!-- PERSONAL -->
+            <!-- PERSONAL INFO TAB - REMOVED VALIDATION -->
             <div class="tab-pane fade show active" id="pills-person" role="tabpanel">
                 <div class="row g-3 mb-4">
                     <div class="col-md-6">
-                        <label asp-for="FirstName" class="form-label"></label>
+                        <label asp-for="FirstName" class="form-label">Lead Name</label>
                         <input asp-for="FirstName" class="form-control" />
-                        <span asp-validation-for="FirstName" class="text-danger"></span>
+                        @* REMOVED: <span asp-validation-for="FirstName" class="text-danger"></span> *@
+                    </div>
+                 
+                </div>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <label asp-for="Phone" class="form-label">Phone</label>
+                        <input asp-for="Phone" class="form-control" id="phoneField" type="tel" pattern="^\+?\d{10,15}$" />
+                        @* REMOVED: <span asp-validation-for="Phone" class="text-danger"></span> *@
                     </div>
                     <div class="col-md-6">
-                        <label asp-for="LastName" class="form-label"></label>
-                        <input asp-for="LastName" class="form-control" />
-                        <span asp-validation-for="LastName" class="text-danger"></span>
+                        <label asp-for="whatsApp" class="form-label">WhatsApp</label>
+                        <input asp-for="whatsApp" class="form-control" id="whatsAppField" type="tel" pattern="^\+?\d{10,15}$" />
+                        @* REMOVED: <span asp-validation-for="whatsApp" class="text-danger"></span> *@
                     </div>
+                </div>
+
+                <div class="row g-3 mb-4">
                     <div class="col-md-6">
-                        <label asp-for="Phone" class="form-label"></label>
-                        <input asp-for="Phone" class="form-control" />
-                        <span asp-validation-for="Phone" class="text-danger"></span>
-                    </div>
-                    <div class="col-md-6">
-                        <label asp-for="Email" class="form-label"></label>
+                        <label asp-for="Email" class="form-label">Email</label>
                         <input asp-for="Email" class="form-control" />
-                        <span asp-validation-for="Email" class="text-danger"></span>
+                        @* REMOVED: <span asp-validation-for="Email" class="text-danger"></span> *@
                     </div>
                     <div class="col-md-6">
-                        <label asp-for="NationalId" class="form-label"></label>
+                        <label asp-for="NationalityID" class="form-label">Nationality</label>
+                        <select asp-for="NationalityID" class="form-select searchable-dropdown" asp-items="ViewBag.NationalityID">
+                            <option value="" disabled selected>-- Select Nationality --</option>
+                        </select>
+                        @* REMOVED: <span asp-validation-for="NationalityID" class="text-danger"></span> *@
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <label asp-for="NationalId" class="form-label">National ID</label>
                         <input asp-for="NationalId" class="form-control" />
-                        <span asp-validation-for="NationalId" class="text-danger"></span>
+                        @* REMOVED: <span asp-validation-for="NationalId" class="text-danger"></span> *@
                     </div>
                     <div class="col-md-6">
-                        <label asp-for="UserType" class="form-label"></label>
-                        <select asp-for="UserType" class="form-select">
-                            <option value="">-- Select --</option>
-                            <option value="1">Applicant</option>
+                        <label asp-for="CityID" class="form-label">City</label>
+                        <select asp-for="CityID" class="form-select searchable-dropdown" asp-items="ViewBag.CityID">
+                            <option value="" disabled selected>-- Select City --</option>
+                        </select>
+                        @* REMOVED: <span asp-validation-for="CityID" class="text-danger"></span> *@
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <label asp-for="UserType" class="form-label">User Type</label>
+                        <select asp-for="UserType" class="form-select searchable-dropdown">
+                            <option value="" disabled selected>-- Select User Type --</option>
+                            <option value="1">Lead</option>
                             <option value="2">Guardian</option>
                         </select>
-                        <span asp-validation-for="UserType" class="text-danger"></span>
+                        <span asp-validation-for="UserType" class="text-danger"></span> 
                     </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Created At</label>
-                        <input type="text" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd HH:mm")" readonly />
-                        <input type="hidden" asp-for="Person_CreatedAt" value="@DateTime.Now" />
-                    </div>
-                   @*  <div class="col-md-6"> 
-                        <label asp-for="Person_CreatedByCode" class="form-label"></label>
-                         <input asp-for="Person_CreatedByCode" class="form-control" /> 
-                         <span asp-validation-for="Person_CreatedByCode" class="text-danger"></span>
-                     </div> *@
-
-                   @*  <div class="col-md-6">
-                        <label asp-for="Person_CreatedByName" class="form-label">Created By</label>
-                        <input asp-for="Person_CreatedByName" class="form-control bg-light" readonly
-                               value="@(Model?.Person_CreatedByName ?? "Current User")" />
-
-                        <input type="hidden" asp-for="Person_CreatedByCode" />
-                    </div> *@
-
-
                 </div>
             </div>
 
-            <!-- EDUCATION -->
+            <!-- EDUCATION INFO TAB - REMOVED VALIDATION -->
             <div class="tab-pane fade" id="pills-education" role="tabpanel">
                 <div class="row g-3 mb-4">
                     <div class="col-md-6">
                         <label asp-for="HighSchoolId" class="form-label">High School</label>
-                        <select asp-for="HighSchoolId" class="form-select" asp-items="ViewBag.HighSchoolId">
-                            <option value="">-- Select --</option>
+                        <select asp-for="HighSchoolId" class="form-select searchable-dropdown" asp-items="ViewBag.HighSchoolId" id="HighSchoolIdDropDown">
+                            <option value="">-- Select High School --</option>
                         </select>
-                        <span asp-validation-for="HighSchoolId" class="text-danger"></span>
+                        @* REMOVED: validation span *@
+                    </div>
+                    <div class="col-md-6" id="HighschOtherDiv" style="display:none;">
+                        <label asp-for="SchoolOther" class="form-label">Other High School</label>
+                        <input asp-for="SchoolOther" class="form-control" />
+                        @* REMOVED: <span asp-validation-for="SchoolOther" class="text-danger"></span> *@
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <label asp-for="GradeID" class="form-label">Grade</label>
+                        <select asp-for="GradeID" class="form-select searchable-dropdown" asp-items="ViewBag.GradeID">
+                            <option value="">-- Select Grade --</option>
+                        </select>
+                        @* REMOVED: <span asp-validation-for="GradeID" class="text-danger"></span> *@
                     </div>
                     <div class="col-md-6">
                         <label asp-for="CertificateId" class="form-label">Certificate</label>
-                        <select asp-for="CertificateId" class="form-select" asp-items="ViewBag.CertificateId">
-                            <option value="">-- Select --</option>
+                        <select asp-for="CertificateId" class="form-select searchable-dropdown" asp-items="ViewBag.CertificateId">
+                            <option value="">-- Select Certificate --</option>
                         </select>
-                        <span asp-validation-for="CertificateId" class="text-danger"></span>
+                        @* REMOVED: <span asp-validation-for="CertificateId" class="text-danger"></span> *@
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <label asp-for="MajorId" class="form-label">First Major Interest</label>
+                        <select id="majorID1" asp-for="MajorId" class="form-select searchable-dropdown" asp-items="ViewBag.MajorId">
+                            <option value="">-- Select First Major --</option>
+                        </select>
+                        @* REMOVED: <span asp-validation-for="MajorId" class="text-danger"></span> *@
                     </div>
                     <div class="col-md-6">
-                        <label asp-for="MajorId" class="form-label">Major</label>
-                        <select asp-for="MajorId" class="form-select" asp-items="ViewBag.MajorId">
-                            <option value="">-- Select --</option>
+                        <label asp-for="SecondMajorId" class="form-label">Second Major Interest</label>
+                        <select id="majorID2" asp-for="SecondMajorId" class="form-select searchable-dropdown" asp-items="ViewBag.SecondMajorId">
+                            <option value="">-- Select Second Major --</option>
                         </select>
-                        <span asp-validation-for="MajorId" class="text-danger"></span>
+                        @* REMOVED: <span asp-validation-for="SecondMajorId" class="text-danger"></span> *@
                     </div>
+                </div>
+
+                <div class="row g-3 mb-4">
                     <div class="col-md-6">
                         <label asp-for="HowDidYouKnowUsId" class="form-label">How Did You Know Us?</label>
-                        <select asp-for="HowDidYouKnowUsId" class="form-select" asp-items="ViewBag.HowDidYouKnowUsId">
-                            <option value="">-- Select --</option>
+                        <select asp-for="HowDidYouKnowUsId" class="form-select searchable-dropdown" asp-items="ViewBag.HowDidYouKnowUsId" id="howDropdown">
+                            <option value="">-- Select Option --</option>
                         </select>
-                        <span asp-validation-for="HowDidYouKnowUsId" class="text-danger"></span>
+                        @* REMOVED: <span asp-validation-for="HowDidYouKnowUsId" class="text-danger"></span> *@
+                    </div>
+                    <div class="col-md-6" id="otherHowDidYouKnow" style="display: none;">
+                        <label asp-for="HowDidYouKnowUs_Other" class="form-label">Please specify how you knew about us</label>
+                        <input asp-for="HowDidYouKnowUs_Other" class="form-control" />
+                        @* REMOVED: <span asp-validation-for="HowDidYouKnowUs_Other" class="text-danger"></span> *@
                     </div>
                 </div>
             </div>
 
-            <!-- REQUEST -->
+            <!-- REQUEST INFO TAB - KEEP VALIDATION -->
             <div class="tab-pane fade" id="pills-request" role="tabpanel">
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <label asp-for="ReasonID" class="form-label">
+                            Call Reason <span class="text-danger">*</span>
+                        </label>
+                        <select asp-for="ReasonID" class="form-select searchable-dropdown" asp-items="ViewBag.ReasonID" id="reasonDropdown" required>
+                            <option value="">-- Select Reason --</option>
+                        </select>
+                        <span asp-validation-for="ReasonID" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6" id="reasonOtherDiv" style="display:none;">
+                        <label asp-for="ReasonOther" class="form-label">Other Reason</label>
+                        <input asp-for="ReasonOther" class="form-control" />
+                        <span asp-validation-for="ReasonOther" class="text-danger"></span>
+                    </div>
+                </div>
 
                 <div class="row g-3 mb-4">
-                    <div class="col-md-12">
-                        <label asp-for="Description" class="form-label"></label>
-                        <textarea asp-for="Description" class="form-control" rows="3"></textarea>
-                        <span asp-validation-for="Description" class="text-danger"></span>
-                    </div>
-                    <div class="col-md-12">
-                        <label asp-for="Comments" class="form-label"></label>
-                        <textarea asp-for="Comments" class="form-control" rows="2"></textarea>
-                        <span asp-validation-for="Comments" class="text-danger"></span>
-                    </div>
                     <div class="col-md-6">
-                        <label asp-for="FollowUpCount" class="form-label"></label>
-                        <input asp-for="FollowUpCount" type="number" class="form-control" min="0" />
+                        <label asp-for="FollowUpCount" class="form-label">Follow Up Count</label>
+                        <input asp-for="FollowUpCount" class="form-control" readonly style="background-color: #f1f3f5; cursor:not-allowed; color: #6c757d;" />
                         <span asp-validation-for="FollowUpCount" class="text-danger"></span>
                     </div>
                     <div class="col-md-6">
-                        <label asp-for="StatusId" class="form-label">Status</label>
-                        <select asp-for="StatusId" class="form-select" asp-items="ViewBag.StatusId">
-                            <option value="">-- Select --</option>
+                        <label asp-for="StatusId" class="form-label">
+                            Status <span class="text-danger">*</span>
+                        </label>
+                        <select asp-for="StatusId" class="form-select searchable-dropdown" asp-items="ViewBag.StatusId" required>
+                            <option value="">-- Select Status --</option>
                         </select>
                         <span asp-validation-for="StatusId" class="text-danger"></span>
                     </div>
-                    <input type="hidden" asp-for="Request_CreatedAt" value="@DateTime.Now" />
-                    @* <div class="col-md-6"> *@
-                    @*     <label asp-for="Request_CreatedByCode" class="form-label">Request Created By Code</label> *@
-                    @*     <input asp-for="Request_CreatedByCode" class="form-control" /> *@
-                    @*     <span asp-validation-for="Request_CreatedByCode" class="text-danger"></span> *@
-                    @* </div> *@
                 </div>
 
-
-                  <div class="text-center mt-4">
-        <button type="submit" class="btn-glow px-5" id="finalSubmitBtn">
-            <i class="bi bi-check-circle"></i> Create
-        </button>
-        <a asp-controller="Home" asp-action="Index" class="btn-cancel ms-3 px-5">Cancel</a>
-    </div>
-
-
-    </div>
-           
-
-
+                <div class="row g-3 mb-4">
+                    <div class="col-12">
+                        <label asp-for="Comments" class="form-label">Comments</label>
+                        <textarea asp-for="Comments" class="form-control" rows="3"></textarea>
+                        <span asp-validation-for="Comments" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <!-- ACTIONS -->
-       
+        <!-- SUBMIT BUTTONS -->
+        <div class="text-center mt-4">
+            <button id="finalSubmitBtn" type="submit" class="btn-glow px-5">
+                <i class="bi bi-check-circle"></i> Create
+            </button>
+            <a asp-controller="Home" asp-action="Index" class="btn-cancel ms-3 px-5">Cancel</a>
+        </div>
     </form>
 </div>
 
+@if (TempData["Toast"] != null)
+{
+    <div id="toastMessage" class="alert alert-info alert-dismissible fade show position-fixed top-0 end-0 m-4" role="alert">
+        <i class="bi bi-info-circle"></i> @TempData["Toast"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
 @section Scripts {
     <script>
-        document.getElementById('finalSubmitBtn').addEventListener('click', function (e) {
-          const form = document.querySelector('form');
-          if (!form.checkValidity()) {
-            e.preventDefault(); // stop form submission
-            e.stopPropagation();
+        console.log('Layout script initialized');
 
-            // Add Bootstrap validation feedback classes
-            form.classList.add('was-validated');
-
-            // Optional: Notify user to check previous tabs
-            alert('🚫 Please complete all required fields in the form before submitting.');
-
-            // Optionally, switch to first tab with invalid input
-            const firstInvalid = form.querySelector(':invalid');
-            if (firstInvalid) {
-              const tabId = firstInvalid.closest('.tab-pane')?.id;
-              if (tabId) {
-                const tabTrigger = document.querySelector(`[data-bs-target="#${tabId}"]`);
-                const tab = new bootstrap.Tab(tabTrigger);
-                tab.show();
-              }
+        // Custom searchable dropdown class (keeping existing functionality)
+        class SearchableDropdown {
+            constructor(selectElement) {
+                this.select = selectElement;
+                this.container = null;
+                this.searchInput = null;
+                this.dropdown = null;
+                this.options = [];
+                this.highlightedIndex = -1;
+                this.init();
             }
-          }
+
+            init() {
+                const originalOptions = Array.from(this.select.options);
+                const placeholder = originalOptions[0];
+                const sortableOptions = originalOptions.slice(1);
+
+                const otherOptions = sortableOptions.filter(opt =>
+                    opt.text.toLowerCase().includes('other') ||
+                    opt.value === '-1' ||
+                    opt.text.toLowerCase().trim() === 'other'
+                );
+
+                const regularOptions = sortableOptions.filter(opt =>
+                    !opt.text.toLowerCase().includes('other') &&
+                    opt.value !== '-1' &&
+                    opt.text.toLowerCase().trim() !== 'other'
+                );
+
+                regularOptions.sort((a, b) => a.text.localeCompare(b.text));
+
+                this.options = [
+                    { value: placeholder.value, text: placeholder.text, disabled: placeholder.disabled },
+                    ...regularOptions.map(opt => ({ value: opt.value, text: opt.text, disabled: opt.disabled })),
+                    ...otherOptions.map(opt => ({ value: opt.value, text: opt.text, disabled: opt.disabled }))
+                ];
+
+                this.createCustomDropdown();
+                this.attachEvents();
+            }
+
+            createCustomDropdown() {
+                this.select.style.display = 'none';
+
+                this.container = document.createElement('div');
+                this.container.className = 'search-dropdown-container';
+
+                this.searchInput = document.createElement('input');
+                this.searchInput.type = 'text';
+                this.searchInput.className = 'search-input form-control';
+                this.searchInput.placeholder = this.options[0].text;
+                this.searchInput.readOnly = true;
+
+                this.dropdown = document.createElement('div');
+                this.dropdown.className = 'search-dropdown';
+
+                this.select.parentNode.insertBefore(this.container, this.select.nextSibling);
+                this.container.appendChild(this.searchInput);
+                this.container.appendChild(this.dropdown);
+
+                this.updateDropdownOptions();
+            }
+
+            updateDropdownOptions(filter = '') {
+                this.dropdown.innerHTML = '';
+                const filteredOptions = this.options.filter(option =>
+                    filter === '' || option.text.toLowerCase().includes(filter.toLowerCase())
+                );
+
+                if (filteredOptions.length === 0 || (filteredOptions.length === 1 && filteredOptions[0].disabled)) {
+                    const noResults = document.createElement('div');
+                    noResults.className = 'no-results';
+                    noResults.textContent = 'No results found';
+                    this.dropdown.appendChild(noResults);
+                    return;
+                }
+
+                filteredOptions.forEach((option, index) => {
+                    if (option.disabled && option.value === '') return;
+
+                    const optionDiv = document.createElement('div');
+                    optionDiv.className = 'search-option';
+                    optionDiv.textContent = option.text;
+                    optionDiv.dataset.value = option.value;
+                    optionDiv.dataset.index = index;
+
+                    if (this.select.value === option.value) {
+                        optionDiv.classList.add('selected');
+                    }
+
+                    optionDiv.addEventListener('click', () => this.selectOption(option));
+                    this.dropdown.appendChild(optionDiv);
+                });
+            }
+
+            selectOption(option) {
+                this.select.value = option.value;
+                this.searchInput.value = option.text;
+                this.searchInput.placeholder = option.text;
+                this.closeDropdown();
+
+                const event = new Event('change', { bubbles: true });
+                this.select.dispatchEvent(event);
+            }
+
+            openDropdown() {
+                this.dropdown.style.display = 'block';
+                this.searchInput.readOnly = false;
+                this.searchInput.focus();
+                this.updateDropdownOptions();
+            }
+
+            closeDropdown() {
+                this.dropdown.style.display = 'none';
+                this.searchInput.readOnly = true;
+                this.highlightedIndex = -1;
+            }
+
+            attachEvents() {
+                this.searchInput.addEventListener('click', () => {
+                    if (this.dropdown.style.display === 'block') {
+                        this.closeDropdown();
+                    } else {
+                        this.openDropdown();
+                    }
+                });
+
+                this.searchInput.addEventListener('input', (e) => {
+                    if (!this.searchInput.readOnly) {
+                        this.updateDropdownOptions(e.target.value);
+                    }
+                });
+
+                this.searchInput.addEventListener('keydown', (e) => {
+                    const options = this.dropdown.querySelectorAll('.search-option');
+
+                    switch (e.key) {
+                        case 'ArrowDown':
+                            e.preventDefault();
+                            this.highlightedIndex = Math.min(this.highlightedIndex + 1, options.length - 1);
+                            this.updateHighlight();
+                            break;
+                        case 'ArrowUp':
+                            e.preventDefault();
+                            this.highlightedIndex = Math.max(this.highlightedIndex - 1, 0);
+                            this.updateHighlight();
+                            break;
+                        case 'Enter':
+                            e.preventDefault();
+                            if (this.highlightedIndex >= 0 && options[this.highlightedIndex]) {
+                                const value = options[this.highlightedIndex].dataset.value;
+                                const option = this.options.find(opt => opt.value === value);
+                                if (option) this.selectOption(option);
+                            }
+                            break;
+                        case 'Escape':
+                            this.closeDropdown();
+                            break;
+                    }
+                });
+
+                document.addEventListener('click', (e) => {
+                    if (!this.container.contains(e.target)) {
+                        this.closeDropdown();
+                    }
+                });
+            }
+
+            updateHighlight() {
+                const options = this.dropdown.querySelectorAll('.search-option');
+                options.forEach((opt, index) => {
+                    opt.classList.toggle('highlighted', index === this.highlightedIndex);
+                });
+            }
+        }
+
+        // WhatsApp auto-copy functionality
+        function setupWhatsAppCopy() {
+            const phoneField = document.getElementById('phoneField');
+            const whatsAppField = document.getElementById('whatsAppField');
+
+            if (!phoneField || !whatsAppField) {
+                console.log('Phone or WhatsApp field not found');
+                return;
+            }
+
+            let userHasManuallyEditedWhatsApp = false;
+            let lastCopiedValue = '';
+
+            function copyPhoneToWhatsApp() {
+                const phoneValue = phoneField.value.trim();
+                const whatsAppValue = whatsAppField.value.trim();
+
+                if (phoneValue && (!whatsAppValue || (whatsAppValue === lastCopiedValue && !userHasManuallyEditedWhatsApp))) {
+                    whatsAppField.value = phoneValue;
+                    lastCopiedValue = phoneValue;
+                    console.log('Copied phone to WhatsApp:', phoneValue);
+                }
+            }
+
+            whatsAppField.addEventListener('input', function(e) {
+                const currentValue = e.target.value.trim();
+                if (currentValue !== lastCopiedValue && currentValue !== '') {
+                    userHasManuallyEditedWhatsApp = true;
+                } else if (currentValue === '') {
+                    userHasManuallyEditedWhatsApp = false;
+                }
+            });
+
+            whatsAppField.addEventListener('focus', function() {
+                if (!userHasManuallyEditedWhatsApp) {
+                    copyPhoneToWhatsApp();
+                }
+            });
+
+            phoneField.addEventListener('input', function() {
+                if (!userHasManuallyEditedWhatsApp) {
+                    setTimeout(copyPhoneToWhatsApp, 100);
+                }
+            });
+
+            console.log('WhatsApp copy functionality initialized');
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            console.log('DOM Content Loaded');
+
+            // Initialize searchable dropdowns
+            const searchableDropdowns = document.querySelectorAll('.searchable-dropdown');
+            console.log('Found', searchableDropdowns.length, 'searchable dropdowns');
+
+            searchableDropdowns.forEach(select => {
+                new SearchableDropdown(select);
+                console.log('Initialized searchable dropdown for:', select.name);
+            });
+
+            // Setup WhatsApp copy
+            setupWhatsAppCopy();
+
+            const form = document.querySelector('form');
+            const major1 = document.getElementById("majorID1");
+            const major2 = document.getElementById("majorID2");
+
+            const statusDropdown = document.querySelector('[name="StatusId"]');
+            const nationalIdInput = document.querySelector('[name="NationalId"]');
+            const nationalityDropdown = document.querySelector('[name="NationalityID"]');
+            const nationalIdLabel = document.querySelector('label[for="NationalId"]');
+
+            // Get all "Other" field references
+            const highSchoolDropdown = document.getElementById("HighSchoolIdDropDown");
+            const highSchoolOtherDiv = document.getElementById("HighschOtherDiv");
+            const highSchoolOtherInput = document.querySelector('[name="SchoolOther"]');
+
+            const howDropdown = document.getElementById("howDropdown");
+            const otherHowDiv = document.getElementById("otherHowDidYouKnow");
+            const otherHowInput = document.querySelector('[name="HowDidYouKnowUs_Other"]');
+
+            const reasonDropdown = document.getElementById("reasonDropdown");
+            const reasonOtherDiv = document.getElementById("reasonOtherDiv");
+            const reasonOtherInput = document.querySelector('[name="ReasonOther"]');
+
+            const toast = document.getElementById('toastMessage');
+
+            if (toast) {
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    toast.classList.add('fade');
+                    setTimeout(() => toast.remove(), 500);
+                }, 4000);
+            }
+
+            const existingHighSchools = @Html.Raw(Json.Serialize(ViewBag.ExistingHighSchoolNames ?? new List<string>()));
+
+            if (highSchoolOtherInput && existingHighSchools.length > 0) {
+                highSchoolOtherInput.addEventListener("input", function () {
+                    const input = highSchoolOtherInput.value.trim().toLowerCase();
+                    const match = existingHighSchools.find(name => name.toLowerCase() === input);
+                    if (match) {
+                        highSchoolOtherInput.value = match;
+                    }
+                });
+            }
+
+            function updateNationalIdLabel() {
+                if (!nationalIdLabel || !nationalityDropdown) return;
+
+                const selectedNationality = nationalityDropdown.value;
+                const selectedText = nationalityDropdown.options[nationalityDropdown.selectedIndex]?.text || "";
+
+                if (selectedText.toLowerCase().includes('egyptian') || selectedNationality === "1") {
+                    nationalIdLabel.textContent = "National ID";
+                    nationalIdInput?.setAttribute("placeholder", "Enter 14-digit National ID");
+                } else if (selectedNationality && selectedNationality !== "" && selectedNationality !== null) {
+                    nationalIdLabel.textContent = "Passport Number";
+                    nationalIdInput?.setAttribute("placeholder", "Enter Passport Number");
+                } else {
+                    nationalIdLabel.textContent = "National ID";
+                    nationalIdInput?.setAttribute("placeholder", "Select nationality first");
+                }
+            }
+
+            // ✅ ENHANCED: Toggle functions with mandatory validation
+            function toggleHighSchoolOther() {
+                if (highSchoolDropdown && highSchoolOtherDiv && highSchoolOtherInput) {
+                    if (highSchoolDropdown.value === "-1") {
+                        // Show the div and make field required
+                        highSchoolOtherDiv.style.display = "block";
+                        highSchoolOtherInput.required = true;
+
+                        // Add visual indicator for required field
+                        const label = highSchoolOtherDiv.querySelector('label');
+                        if (label && !label.querySelector('.text-danger')) {
+                            label.innerHTML = label.textContent + ' <span class="text-danger">*</span>';
+                        }
+
+                        console.log('High School Other field is now required');
+                    } else {
+                        // Hide the div and remove required attribute
+                        highSchoolOtherDiv.style.display = "none";
+                        highSchoolOtherInput.required = false;
+                        highSchoolOtherInput.value = "";
+
+                        // Remove validation classes and errors
+                        highSchoolOtherInput.classList.remove('is-invalid', 'is-valid');
+                        const existingError = highSchoolOtherDiv.querySelector('.manual-error');
+                        if (existingError) existingError.remove();
+
+                        // Remove the required asterisk
+                        const label = highSchoolOtherDiv.querySelector('label');
+                        if (label) {
+                            const asterisk = label.querySelector('.text-danger');
+                            if (asterisk) asterisk.remove();
+                        }
+
+                        console.log('High School Other field is no longer required');
+                    }
+                }
+            }
+
+            function toggleHowOther() {
+                if (!howDropdown || !otherHowDiv || !otherHowInput) return;
+
+                if (howDropdown.value === "8") {
+                    // Show the div and make field required
+                    otherHowDiv.style.display = "block";
+                    otherHowInput.required = true;
+
+                    // Add visual indicator for required field
+                    const label = otherHowDiv.querySelector('label');
+                    if (label && !label.querySelector('.text-danger')) {
+                        label.innerHTML = label.textContent + ' <span class="text-danger">*</span>';
+                    }
+
+                    console.log('How Did You Know Us Other field is now required');
+                } else {
+                    // Hide the div and remove required attribute
+                    otherHowDiv.style.display = "none";
+                    otherHowInput.required = false;
+                    otherHowInput.value = "";
+
+                    // Remove validation classes and errors
+                    otherHowInput.classList.remove('is-invalid', 'is-valid');
+                    const existingError = otherHowDiv.querySelector('.manual-error');
+                    if (existingError) existingError.remove();
+
+                    // Remove the required asterisk
+                    const label = otherHowDiv.querySelector('label');
+                    if (label) {
+                        const asterisk = label.querySelector('.text-danger');
+                        if (asterisk) asterisk.remove();
+                    }
+
+                    console.log('How Did You Know Us Other field is no longer required');
+                }
+            }
+
+            function toggleReasonOther() {
+                if (!reasonDropdown || !reasonOtherDiv || !reasonOtherInput) return;
+
+                if (reasonDropdown.value === "-1") {
+                    // Show the div and make field required
+                    reasonOtherDiv.style.display = "block";
+                    reasonOtherInput.required = true;
+
+                    // Add visual indicator for required field
+                    const label = reasonOtherDiv.querySelector('label');
+                    if (label && !label.querySelector('.text-danger')) {
+                        label.innerHTML = label.textContent + ' <span class="text-danger">*</span>';
+                    }
+
+                    console.log('Reason Other field is now required');
+                } else {
+                    // Hide the div and remove required attribute
+                    reasonOtherDiv.style.display = "none";
+                    reasonOtherInput.required = false;
+                    reasonOtherInput.value = "";
+
+                    // Remove validation classes and errors
+                    reasonOtherInput.classList.remove('is-invalid', 'is-valid');
+                    const existingError = reasonOtherDiv.querySelector('.manual-error');
+                    if (existingError) existingError.remove();
+
+                    // Remove the required asterisk
+                    const label = reasonOtherDiv.querySelector('label');
+                    if (label) {
+                        const asterisk = label.querySelector('.text-danger');
+                        if (asterisk) asterisk.remove();
+                    }
+
+                    console.log('Reason Other field is no longer required');
+                }
+            }
+
+            // Event listeners
+            highSchoolDropdown?.addEventListener("change", toggleHighSchoolOther);
+            howDropdown?.addEventListener("change", toggleHowOther);
+            reasonDropdown?.addEventListener("change", toggleReasonOther);
+            nationalityDropdown?.addEventListener("change", updateNationalIdLabel);
+
+            // Initialize
+            toggleHighSchoolOther();
+            toggleHowOther();
+            toggleReasonOther();
+            updateNationalIdLabel();
+
+            // ✅ NEW: Real-time validation for "Other" fields
+            function setupOtherFieldValidation(inputField, fieldName) {
+                if (!inputField) return;
+
+                inputField.addEventListener('input', function() {
+                    const value = this.value.trim();
+
+                    // Remove existing manual errors
+                    const existingError = this.parentNode.querySelector('.manual-error');
+                    if (existingError) existingError.remove();
+
+                    // Remove validation classes
+                    this.classList.remove('is-invalid', 'is-valid');
+
+                    // If field is required and has value, mark as valid
+                    if (this.required && value) {
+                        this.classList.add('is-valid');
+                    }
+                });
+            }
+
+            // Setup real-time validation for all "Other" fields
+            setupOtherFieldValidation(highSchoolOtherInput, 'High School Other');
+            setupOtherFieldValidation(otherHowInput, 'How Did You Know Us Other');
+            setupOtherFieldValidation(reasonOtherInput, 'Reason Other');
+
+            // ✅ ENHANCED: Form validation with "Other" field checking
+            document.getElementById('finalSubmitBtn')?.addEventListener('click', function (e) {
+                // Clear all previous manual errors
+                document.querySelectorAll('.manual-error').forEach(error => error.remove());
+                document.querySelectorAll('.is-invalid').forEach(field => field.classList.remove('is-invalid'));
+
+                // Get values from all important fields
+                const firstName = document.querySelector('[name="FirstName"]')?.value?.trim();
+                // const lastName = document.querySelector('[name="LastName"]')?.value?.trim();
+                const phone = document.querySelector('[name="Phone"]')?.value?.trim();
+                const reasonId = reasonDropdown?.value;
+                const statusId = statusDropdown?.value;
+
+                // Check for major validation first (if both selected and same)
+                if (major1?.value && major2?.value && major1.value === major2.value) {
+                    e.preventDefault();
+                    alert("🚫 Primary and secondary major cannot be the same.");
+                    const educationTabTrigger = document.querySelector('[data-bs-target="#pills-education"]');
+                    if (educationTabTrigger) new bootstrap.Tab(educationTabTrigger).show();
+                    return;
+                }
+
+                // ✅ NEW: Validate "Other" fields FIRST
+                let otherFieldsValid = true;
+                let firstInvalidOtherField = null;
+
+                // Check High School Other field
+                if (highSchoolDropdown?.value === "-1" && (!highSchoolOtherInput?.value?.trim())) {
+                    otherFieldsValid = false;
+                    if (!firstInvalidOtherField) {
+                        firstInvalidOtherField = {
+                            field: highSchoolOtherInput,
+                            tab: '#pills-education',
+                            message: 'Please specify the other high school name.'
+                        };
+                    }
+                    showError(highSchoolOtherInput, "This field is required when 'Other' is selected.");
+                }
+
+                // Check How Did You Know Us Other field
+                if (howDropdown?.value === "8" && (!otherHowInput?.value?.trim())) {
+                    otherFieldsValid = false;
+                    if (!firstInvalidOtherField) {
+                        firstInvalidOtherField = {
+                            field: otherHowInput,
+                            tab: '#pills-education',
+                            message: 'Please specify how you knew about us.'
+                        };
+                    }
+                    showError(otherHowInput, "This field is required when 'Other' is selected.");
+                }
+
+                // Check Reason Other field
+                if (reasonDropdown?.value === "-1" && (!reasonOtherInput?.value?.trim())) {
+                    otherFieldsValid = false;
+                    if (!firstInvalidOtherField) {
+                        firstInvalidOtherField = {
+                            field: reasonOtherInput,
+                            tab: '#pills-request',
+                            message: 'Please specify the other reason.'
+                        };
+                    }
+                    showError(reasonOtherInput, "This field is required when 'Other' is selected.");
+                }
+
+                // If any "Other" field is invalid, stop and focus on it
+                if (!otherFieldsValid) {
+                    e.preventDefault();
+                    alert(`🚫 ${firstInvalidOtherField.message}`);
+
+                    // Navigate to the appropriate tab
+                    const tabTrigger = document.querySelector(`[data-bs-target="${firstInvalidOtherField.tab}"]`);
+                    if (tabTrigger) new bootstrap.Tab(tabTrigger).show();
+
+                    // Focus on the field after tab animation
+                    setTimeout(() => {
+                        firstInvalidOtherField.field?.focus();
+                        firstInvalidOtherField.field?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }, 300);
+                    return;
+                }
+
+                // Continue with existing smart validation logic...
+                const hasBasicInfo = firstName && phone;
+                const hasRequestInfo = reasonId && statusId;
+
+                if (!hasBasicInfo && !hasRequestInfo) {
+                    e.preventDefault();
+                    alert("🚫 Please start by filling your basic information (Name and Phone).");
+
+                    const personalTabTrigger = document.querySelector('[data-bs-target="#pills-person"]');
+                    if (personalTabTrigger) new bootstrap.Tab(personalTabTrigger).show();
+
+                    setTimeout(() => {
+                        if (!firstName) {
+                            document.querySelector('[name="FirstName"]')?.focus();
+                        } else if (!phone) {
+                            document.querySelector('[name="Phone"]')?.focus();
+                        }
+                    }, 300);
+                    return;
+                }
+
+                if (!hasBasicInfo && hasRequestInfo) {
+                    e.preventDefault();
+                    alert("🚫 Please complete your basic information (Name and Phone) first.");
+
+                    const personalTabTrigger = document.querySelector('[data-bs-target="#pills-person"]');
+                    if (personalTabTrigger) new bootstrap.Tab(personalTabTrigger).show();
+
+                    setTimeout(() => {
+                        let targetField = null;
+                        if (!firstName) {
+                            targetField = document.querySelector('[name="FirstName"]');
+                        }  else if (!phone) {
+                            targetField = document.querySelector('[name="Phone"]');
+                        }
+
+                        if (targetField) {
+                            targetField.focus();
+                            targetField.style.border = '2px solid #dc3545';
+                            setTimeout(() => targetField.style.border = '', 3000);
+                        }
+                    }, 300);
+                    return;
+                }
+
+                if (hasBasicInfo && !hasRequestInfo) {
+                    e.preventDefault();
+                    alert("🚫 Please complete the Request Information to finish your submission.");
+
+                    const requestTabTrigger = document.querySelector('[data-bs-target="#pills-request"]');
+                    if (requestTabTrigger) new bootstrap.Tab(requestTabTrigger).show();
+
+                    setTimeout(() => {
+                        if (!reasonId) {
+                            const reasonSearchInput = reasonDropdown?.parentNode?.querySelector('.search-input');
+                            if (reasonSearchInput) {
+                                reasonSearchInput.focus();
+                                reasonSearchInput.style.border = '2px solid #dc3545';
+                                setTimeout(() => reasonSearchInput.style.border = '', 3000);
+                            }
+                        } else if (!statusId) {
+                            const statusSearchInput = statusDropdown?.parentNode?.querySelector('.search-input');
+                            if (statusSearchInput) {
+                                statusSearchInput.focus();
+                                statusSearchInput.style.border = '2px solid #dc3545';
+                                setTimeout(() => statusSearchInput.style.border = '', 3000);
+                            }
+                        }
+                    }, 300);
+                    return;
+                }
+
+                // If both basic sections are complete, do standard form validation
+                if (!form.checkValidity()) {
+                    e.preventDefault();
+                    form.classList.add('was-validated');
+                    alert('🚫 Please complete all required fields.');
+
+                    const firstInvalid = form.querySelector(':invalid');
+                    if (firstInvalid) {
+                        const tabId = firstInvalid.closest('.tab-pane')?.id;
+                        const tabTrigger = document.querySelector(`[data-bs-target="#${tabId}"]`);
+                        if (tabTrigger) new bootstrap.Tab(tabTrigger).show();
+
+                        setTimeout(() => firstInvalid.focus(), 300);
+                    }
+                    return;
+                }
+
+                console.log('Form is valid and ready to submit');
+            });
+
+            // ✅ NEW: Helper function to show validation errors
+            function showError(element, message) {
+                if (!element) return;
+
+                // Remove any existing manual error for this field
+                const existingError = element.parentNode.querySelector('.manual-error');
+                if (existingError) existingError.remove();
+
+                const errorSpan = document.createElement("span");
+                errorSpan.className = "text-danger manual-error d-block mt-1";
+                errorSpan.innerText = message;
+                element.classList.add("is-invalid");
+                element.parentNode.appendChild(errorSpan);
+            }
         });
     </script>
 
@@ -304,3 +982,527 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 }
+
+@* @section Scripts {
+    <script>
+        console.log('Layout script initialized');
+
+        // Custom searchable dropdown class
+        class SearchableDropdown {
+            constructor(selectElement) {
+                this.select = selectElement;
+                this.container = null;
+                this.searchInput = null;
+                this.dropdown = null;
+                this.options = [];
+                this.highlightedIndex = -1;
+                this.init();
+            }
+
+            init() {
+                // Get all options and sort them alphabetically (except first placeholder and "Other" options)
+                const originalOptions = Array.from(this.select.options);
+                const placeholder = originalOptions[0];
+                const sortableOptions = originalOptions.slice(1);
+
+                // Separate "Other" options from regular options
+                const otherOptions = sortableOptions.filter(opt =>
+                    opt.text.toLowerCase().includes('other') ||
+                    opt.value === '-1' ||
+                    opt.text.toLowerCase().trim() === 'other'
+                );
+
+                const regularOptions = sortableOptions.filter(opt =>
+                    !opt.text.toLowerCase().includes('other') &&
+                    opt.value !== '-1' &&
+                    opt.text.toLowerCase().trim() !== 'other'
+                );
+
+                // Sort regular options alphabetically
+                regularOptions.sort((a, b) => a.text.localeCompare(b.text));
+
+                // Store options data: placeholder + sorted regular options + other options at the end
+                this.options = [
+                    { value: placeholder.value, text: placeholder.text, disabled: placeholder.disabled },
+                    ...regularOptions.map(opt => ({ value: opt.value, text: opt.text, disabled: opt.disabled })),
+                    ...otherOptions.map(opt => ({ value: opt.value, text: opt.text, disabled: opt.disabled }))
+                ];
+
+                this.createCustomDropdown();
+                this.attachEvents();
+            }
+
+            createCustomDropdown() {
+                // Hide original select
+                this.select.style.display = 'none';
+
+                // Create container
+                this.container = document.createElement('div');
+                this.container.className = 'search-dropdown-container';
+
+                // Create search input
+                this.searchInput = document.createElement('input');
+                this.searchInput.type = 'text';
+                this.searchInput.className = 'search-input form-control';
+                this.searchInput.placeholder = this.options[0].text;
+                this.searchInput.readOnly = true;
+
+                // Create dropdown
+                this.dropdown = document.createElement('div');
+                this.dropdown.className = 'search-dropdown';
+
+                // Insert after original select
+                this.select.parentNode.insertBefore(this.container, this.select.nextSibling);
+                this.container.appendChild(this.searchInput);
+                this.container.appendChild(this.dropdown);
+
+                this.updateDropdownOptions();
+            }
+
+            updateDropdownOptions(filter = '') {
+                this.dropdown.innerHTML = '';
+                const filteredOptions = this.options.filter(option =>
+                    filter === '' || option.text.toLowerCase().includes(filter.toLowerCase())
+                );
+
+                if (filteredOptions.length === 0 || (filteredOptions.length === 1 && filteredOptions[0].disabled)) {
+                    const noResults = document.createElement('div');
+                    noResults.className = 'no-results';
+                    noResults.textContent = 'No results found';
+                    this.dropdown.appendChild(noResults);
+                    return;
+                }
+
+                filteredOptions.forEach((option, index) => {
+                    if (option.disabled && option.value === '') return; // Skip placeholder in dropdown
+
+                    const optionDiv = document.createElement('div');
+                    optionDiv.className = 'search-option';
+                    optionDiv.textContent = option.text;
+                    optionDiv.dataset.value = option.value;
+                    optionDiv.dataset.index = index;
+
+                    if (this.select.value === option.value) {
+                        optionDiv.classList.add('selected');
+                    }
+
+                    optionDiv.addEventListener('click', () => this.selectOption(option));
+                    this.dropdown.appendChild(optionDiv);
+                });
+            }
+
+            selectOption(option) {
+                this.select.value = option.value;
+                this.searchInput.value = option.text;
+                this.searchInput.placeholder = option.text;
+                this.closeDropdown();
+
+                // Trigger change event
+                const event = new Event('change', { bubbles: true });
+                this.select.dispatchEvent(event);
+            }
+
+            openDropdown() {
+                this.dropdown.style.display = 'block';
+                this.searchInput.readOnly = false;
+                this.searchInput.focus();
+                this.updateDropdownOptions();
+            }
+
+            closeDropdown() {
+                this.dropdown.style.display = 'none';
+                this.searchInput.readOnly = true;
+                this.highlightedIndex = -1;
+            }
+
+            attachEvents() {
+                // Click to open/close
+                this.searchInput.addEventListener('click', () => {
+                    if (this.dropdown.style.display === 'block') {
+                        this.closeDropdown();
+                    } else {
+                        this.openDropdown();
+                    }
+                });
+
+                // Search as you type
+                this.searchInput.addEventListener('input', (e) => {
+                    if (!this.searchInput.readOnly) {
+                        this.updateDropdownOptions(e.target.value);
+                    }
+                });
+
+                // Keyboard navigation
+                this.searchInput.addEventListener('keydown', (e) => {
+                    const options = this.dropdown.querySelectorAll('.search-option');
+
+                    switch (e.key) {
+                        case 'ArrowDown':
+                            e.preventDefault();
+                            this.highlightedIndex = Math.min(this.highlightedIndex + 1, options.length - 1);
+                            this.updateHighlight();
+                            break;
+                        case 'ArrowUp':
+                            e.preventDefault();
+                            this.highlightedIndex = Math.max(this.highlightedIndex - 1, 0);
+                            this.updateHighlight();
+                            break;
+                        case 'Enter':
+                            e.preventDefault();
+                            if (this.highlightedIndex >= 0 && options[this.highlightedIndex]) {
+                                const value = options[this.highlightedIndex].dataset.value;
+                                const option = this.options.find(opt => opt.value === value);
+                                if (option) this.selectOption(option);
+                            }
+                            break;
+                        case 'Escape':
+                            this.closeDropdown();
+                            break;
+                    }
+                });
+
+                // Close on outside click
+                document.addEventListener('click', (e) => {
+                    if (!this.container.contains(e.target)) {
+                        this.closeDropdown();
+                    }
+                });
+            }
+
+            updateHighlight() {
+                const options = this.dropdown.querySelectorAll('.search-option');
+                options.forEach((opt, index) => {
+                    opt.classList.toggle('highlighted', index === this.highlightedIndex);
+                });
+            }
+        }
+
+        // WhatsApp auto-copy functionality
+        function setupWhatsAppCopy() {
+            const phoneField = document.getElementById('phoneField');
+            const whatsAppField = document.getElementById('whatsAppField');
+
+            if (!phoneField || !whatsAppField) {
+                console.log('Phone or WhatsApp field not found');
+                return;
+            }
+
+            let userHasManuallyEditedWhatsApp = false;
+            let lastCopiedValue = '';
+
+            function copyPhoneToWhatsApp() {
+                const phoneValue = phoneField.value.trim();
+                const whatsAppValue = whatsAppField.value.trim();
+
+                console.log('Attempting to copy - Phone:', phoneValue, 'WhatsApp:', whatsAppValue, 'UserEdited:', userHasManuallyEditedWhatsApp);
+
+                // Only auto-copy if:
+                // 1. WhatsApp field is empty, OR
+                // 2. WhatsApp field contains the previously auto-copied value (user hasn't manually changed it)
+                if (phoneValue && (!whatsAppValue || (whatsAppValue === lastCopiedValue && !userHasManuallyEditedWhatsApp))) {
+                    whatsAppField.value = phoneValue;
+                    lastCopiedValue = phoneValue;
+                    console.log('Copied phone to WhatsApp:', phoneValue);
+                }
+            }
+
+            // Track if user manually edits WhatsApp field
+            whatsAppField.addEventListener('input', function(e) {
+                const currentValue = e.target.value.trim();
+
+                // If the current value is different from what we last copied and not empty,
+                // it means user is manually editing
+                if (currentValue !== lastCopiedValue && currentValue !== '') {
+                    userHasManuallyEditedWhatsApp = true;
+                    console.log('User manually edited WhatsApp field');
+                } else if (currentValue === '') {
+                    // If user clears the field, reset the flag so auto-copy can work again
+                    userHasManuallyEditedWhatsApp = false;
+                    console.log('WhatsApp field cleared, auto-copy enabled again');
+                }
+            });
+
+            // Auto-copy on focus only if field is empty or contains auto-copied value
+            whatsAppField.addEventListener('focus', function() {
+                if (!userHasManuallyEditedWhatsApp) {
+                    copyPhoneToWhatsApp();
+                }
+            });
+
+            // Auto-copy when phone changes, but only if user hasn't manually edited WhatsApp
+            phoneField.addEventListener('input', function() {
+                if (!userHasManuallyEditedWhatsApp) {
+                    setTimeout(copyPhoneToWhatsApp, 100);
+                }
+            });
+
+            console.log('WhatsApp copy functionality initialized');
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            console.log('DOM Content Loaded');
+
+            // Initialize searchable dropdowns
+            const searchableDropdowns = document.querySelectorAll('.searchable-dropdown');
+            console.log('Found', searchableDropdowns.length, 'searchable dropdowns');
+
+            searchableDropdowns.forEach(select => {
+                new SearchableDropdown(select);
+                console.log('Initialized searchable dropdown for:', select.name);
+            });
+
+            // Setup WhatsApp copy
+            setupWhatsAppCopy();
+
+            const form = document.querySelector('form');
+            const major1 = document.getElementById("majorID1");
+            const major2 = document.getElementById("majorID2");
+
+            const statusDropdown = document.querySelector('[name="StatusId"]');
+            const nationalIdInput = document.querySelector('[name="NationalId"]');
+            const nationalityDropdown = document.querySelector('[name="NationalityID"]');
+
+            // Get the label element for National ID
+            const nationalIdLabel = document.querySelector('label[for="NationalId"]');
+
+            const highSchoolDropdown = document.getElementById("HighSchoolIdDropDown");
+            const highSchoolOtherDiv = document.getElementById("HighschOtherDiv");
+
+            const howDropdown = document.getElementById("howDropdown");
+            const otherHowDiv = document.getElementById("otherHowDidYouKnow");
+
+            const reasonDropdown = document.getElementById("reasonDropdown");
+            const reasonOtherDiv = document.getElementById("reasonOtherDiv");
+
+            const highSchoolOtherInput = document.querySelector("#SchoolOther");
+            const toast = document.getElementById('toastMessage');
+
+            if (toast) {
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    toast.classList.add('fade');
+                    setTimeout(() => toast.remove(), 500);
+                }, 4000);
+            }
+
+            const existingHighSchools = @Html.Raw(Json.Serialize(ViewBag.ExistingHighSchoolNames ?? new List<string>()));
+
+            if (highSchoolOtherInput && existingHighSchools.length > 0) {
+                highSchoolOtherInput.addEventListener("input", function () {
+                    const input = highSchoolOtherInput.value.trim().toLowerCase();
+                    const match = existingHighSchools.find(name => name.toLowerCase() === input);
+                    if (match) {
+                        highSchoolOtherInput.value = match;
+                    }
+                });
+            }
+
+            function updateNationalIdLabel() {
+                if (!nationalIdLabel || !nationalityDropdown) return;
+
+                const selectedNationality = nationalityDropdown.value;
+                const selectedText = nationalityDropdown.options[nationalityDropdown.selectedIndex]?.text || "";
+
+                if (selectedText.toLowerCase().includes('egyptian') || selectedNationality === "1") {
+                    nationalIdLabel.textContent = "National ID";
+                    nationalIdInput?.setAttribute("placeholder", "Enter 14-digit National ID");
+                } else if (selectedNationality && selectedNationality !== "" && selectedNationality !== null) {
+                    nationalIdLabel.textContent = "Passport Number";
+                    nationalIdInput?.setAttribute("placeholder", "Enter Passport Number");
+                } else {
+                    nationalIdLabel.textContent = "National ID";
+                    nationalIdInput?.setAttribute("placeholder", "Select nationality first");
+                }
+            }
+
+            function toggleHighSchoolOther() {
+                if (highSchoolDropdown && highSchoolOtherDiv) {
+                    highSchoolOtherDiv.style.display = highSchoolDropdown.value === "-1" ? "block" : "none";
+                }
+            }
+
+            function toggleHowOther() {
+                if (!howDropdown || !otherHowDiv) return;
+                otherHowDiv.style.display = howDropdown.value === "8" ? "block" : "none";
+                if (howDropdown.value !== "8") {
+                    const input = otherHowDiv.querySelector("input");
+                    if (input) input.value = "";
+                }
+            }
+
+            function toggleReasonOther() {
+                if (!reasonDropdown || !reasonOtherDiv) return;
+                reasonOtherDiv.style.display = reasonDropdown.value === "-1" ? "block" : "none";
+                if (reasonDropdown.value !== "-1") {
+                    const input = reasonOtherDiv.querySelector("input");
+                    if (input) input.value = "";
+                }
+            }
+
+            // Event listeners
+            highSchoolDropdown?.addEventListener("change", toggleHighSchoolOther);
+            howDropdown?.addEventListener("change", toggleHowOther);
+            reasonDropdown?.addEventListener("change", toggleReasonOther);
+            nationalityDropdown?.addEventListener("change", function() {
+                updateNationalIdLabel();
+                // REMOVED: validateNationalId() - no validation for personal info
+            });
+
+            // Initialize
+            toggleHighSchoolOther();
+            toggleHowOther();
+            toggleReasonOther();
+            updateNationalIdLabel();
+
+            // Enhanced form validation with smart bi-directional tab navigation
+            document.getElementById('finalSubmitBtn')?.addEventListener('click', function (e) {
+                // Get values from all important fields
+                const firstName = document.querySelector('[name="FirstName"]')?.value?.trim();
+                const lastName = document.querySelector('[name="LastName"]')?.value?.trim();
+                const phone = document.querySelector('[name="Phone"]')?.value?.trim();
+                const reasonId = reasonDropdown?.value;
+                const statusId = statusDropdown?.value;
+
+                // Check for major validation first (if both selected and same)
+                if (major1?.value && major2?.value && major1.value === major2.value) {
+                    e.preventDefault();
+                    alert("🚫 Primary and secondary major cannot be the same.");
+
+                    // Navigate to Education tab
+                    const educationTabTrigger = document.querySelector('[data-bs-target="#pills-education"]');
+                    if (educationTabTrigger) new bootstrap.Tab(educationTabTrigger).show();
+                    return;
+                }
+
+                // Smart validation logic
+                const hasBasicInfo = firstName && lastName && phone;
+                const hasRequestInfo = reasonId && statusId;
+
+                if (!hasBasicInfo && !hasRequestInfo) {
+                    // Neither tab is complete - go to Personal Info tab
+                    e.preventDefault();
+                    alert("🚫 Please start by filling your basic information (Name and Phone).");
+
+                    const personalTabTrigger = document.querySelector('[data-bs-target="#pills-person"]');
+                    if (personalTabTrigger) new bootstrap.Tab(personalTabTrigger).show();
+
+                    // Focus on first empty field
+                    setTimeout(() => {
+                        if (!firstName) {
+                            document.querySelector('[name="FirstName"]')?.focus();
+                        } else if (!lastName) {
+                            document.querySelector('[name="LastName"]')?.focus();
+                        } else if (!phone) {
+                            document.querySelector('[name="Phone"]')?.focus();
+                        }
+                    }, 300);
+                    return;
+                }
+
+                if (!hasBasicInfo && hasRequestInfo) {
+                    // Request tab filled but Personal Info missing - go to Personal Info tab
+                    e.preventDefault();
+                    alert("🚫 Please complete your basic information (Name and Phone) first.");
+
+                    const personalTabTrigger = document.querySelector('[data-bs-target="#pills-person"]');
+                    if (personalTabTrigger) new bootstrap.Tab(personalTabTrigger).show();
+
+                    // Focus on first empty field and highlight it
+                    setTimeout(() => {
+                        let targetField = null;
+                        if (!firstName) {
+                            targetField = document.querySelector('[name="FirstName"]');
+                        } else if (!lastName) {
+                            targetField = document.querySelector('[name="LastName"]');
+                        } else if (!phone) {
+                            targetField = document.querySelector('[name="Phone"]');
+                        }
+
+                        if (targetField) {
+                            targetField.focus();
+                            targetField.style.border = '2px solid #dc3545'; // Red border
+                            setTimeout(() => {
+                                targetField.style.border = '';
+                            }, 3000);
+                        }
+                    }, 300);
+                    return;
+                }
+
+                if (hasBasicInfo && !hasRequestInfo) {
+                    // Personal Info filled but Request tab missing - go to Request Info tab
+                    e.preventDefault();
+                    alert("🚫 Please complete the Request Information to finish your submission.");
+
+                    const requestTabTrigger = document.querySelector('[data-bs-target="#pills-request"]');
+                    if (requestTabTrigger) new bootstrap.Tab(requestTabTrigger).show();
+
+                    // Focus on first empty required field and highlight it
+                    setTimeout(() => {
+                        if (!reasonId) {
+                            const reasonSearchInput = reasonDropdown?.parentNode?.querySelector('.search-input');
+                            if (reasonSearchInput) {
+                                reasonSearchInput.focus();
+                                reasonSearchInput.style.border = '2px solid #dc3545';
+                                setTimeout(() => {
+                                    reasonSearchInput.style.border = '';
+                                }, 3000);
+                            }
+                        } else if (!statusId) {
+                            const statusSearchInput = statusDropdown?.parentNode?.querySelector('.search-input');
+                            if (statusSearchInput) {
+                                statusSearchInput.focus();
+                                statusSearchInput.style.border = '2px solid #dc3545';
+                                setTimeout(() => {
+                                    statusSearchInput.style.border = '';
+                                }, 3000);
+                            }
+                        }
+                    }, 300);
+                    return;
+                }
+
+                // If both basic sections are complete, do standard form validation
+                if (!form.checkValidity()) {
+                    e.preventDefault();
+                    form.classList.add('was-validated');
+                    alert('🚫 Please complete all required fields.');
+
+                    const firstInvalid = form.querySelector(':invalid');
+                    if (firstInvalid) {
+                        const tabId = firstInvalid.closest('.tab-pane')?.id;
+                        const tabTrigger = document.querySelector(`[data-bs-target="#${tabId}"]`);
+                        if (tabTrigger) new bootstrap.Tab(tabTrigger).show();
+
+                        // Focus on the invalid field
+                        setTimeout(() => {
+                            firstInvalid.focus();
+                        }, 300);
+                    }
+                    return;
+                }
+
+                // If we reach here, form should be valid and will submit
+                console.log('Form is valid and ready to submit');
+            });
+
+            // REMOVED: Custom National ID validation - no validation for personal info
+
+            // REMOVED: Custom validation on submit for personal/education tabs
+            // Only keep validation for Request Info tab if needed
+
+            function showError(element, message) {
+                if (!element) return;
+                const errorSpan = document.createElement("span");
+                errorSpan.className = "text-danger manual-error";
+                errorSpan.innerText = message;
+                element.classList.add("is-invalid");
+                element.parentNode.appendChild(errorSpan);
+            }
+        });
+    </script>
+
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+} *@

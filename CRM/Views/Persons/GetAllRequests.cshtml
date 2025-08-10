@@ -1,0 +1,833 @@
+﻿@using CRM.ViewModel
+@using Microsoft.AspNetCore.Html
+@using System.Text.Json
+@using CRM.Models
+@using CRM.Pagination
+
+@model List<RequestViewModel>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+<link href="~/css/light.css" rel="stylesheet" />
+
+<div class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <a asp-action="Index" asp-controller="Home" class="btn-glow me-3">
+                <i class="bi bi-house-fill"></i> Home
+            </a>
+        </div>
+    </div>
+
+    <h2 class="GetAll-header">
+        <i class="bi bi-list-ul text-primary"></i> All Requests
+        @if (ViewBag.Pagination != null)
+        {
+            var pagination = ViewBag.Pagination as PaginationInfo;
+            <span class="badge bg-secondary ms-2">@pagination?.TotalCount Total</span>
+        }
+        else
+        {
+            <span class="badge bg-secondary ms-2">@Model.Count() Total</span>
+        }
+    </h2>
+    <div class="filter-section mb-4">
+        <div class="filter-header">
+            <h5 class="mb-0">
+                <i class="bi bi-funnel me-2"></i>Filters
+            </h5>
+            <button type="button" class="btn btn-sm btn-outline-secondary" id="clearFilters">
+                <i class="bi bi-x-circle me-1"></i>Clear All
+            </button>
+        </div>
+
+        <div class="filter-content">
+            <form method="get" id="filterForm">
+                <!-- First Row -->
+                <div class="row g-3 mb-3">
+                    <div class="col-md-3">
+                        <label class="form-label">
+                            <i class="bi bi-tag me-1"></i>Reason
+                        </label>
+                        <select class="form-select" id="reasonFilter" name="reasonFilter">
+                            <option value="">All Reasons</option>
+                            @if (ViewBag.AllReasons is List<string> reasons)
+                            {
+                                @foreach (var reason in reasons)
+                                {
+                                    var isSelected = ViewBag.CurrentFilters?.ReasonFilter == reason;
+                                    <option value="@reason" selected="@isSelected">@reason</option>
+                                }
+                            }
+                        </select>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="form-label">
+                            <i class="bi bi-flag me-1"></i>Status
+                        </label>
+                        <select class="form-select" id="statusFilter" name="statusFilter">
+                            <option value="">All Statuses</option>
+                            @if (ViewBag.AllStatuses is List<string> statuses)
+                            {
+                                @foreach (var status in statuses)
+                                {
+                                    var isSelected = ViewBag.CurrentFilters?.StatusFilter == status;
+                                    <option value="@status" selected="@isSelected">@status</option>
+                                }
+                            }
+                        </select>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="form-label">
+                            <i class="bi bi-person me-1"></i>Created By
+                        </label>
+                        <select class="form-select" id="createdByFilter" name="createdByFilter">
+                            <option value="">All Creators</option>
+                            @if (ViewBag.AllCreators is List<string> creators)
+                            {
+                                @foreach (var creator in creators)
+                                {
+                                    var isSelected = ViewBag.CurrentFilters?.CreatedByFilter == creator;
+                                    <option value="@creator" selected="@isSelected">@creator</option>
+                                }
+                            }
+                        </select>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="form-label">
+                            <i class="bi bi-bell me-1"></i>Follow-up Status
+                        </label>
+                        <select class="form-select" id="followUpFilter" name="followUpFilter">
+                            <option value="">All Requests</option>
+                            @{
+                                var currentFollowUpFilter = ViewBag.CurrentFilters?.FollowUpFilter;
+                            }
+                            <option value="requires_followup" selected="@(currentFollowUpFilter == "requires_followup")">Requires Follow-up</option>
+                            <option value="overdue_followup" selected="@(currentFollowUpFilter == "overdue_followup")">Overdue Follow-up</option>
+                            <option value="max_followups_reached" selected="@(currentFollowUpFilter == "max_followups_reached")">Max Follow-ups Reached</option>
+                            <option value="with_followups" selected="@(currentFollowUpFilter == "with_followups")">With Follow-ups</option>
+                            <option value="no_followups" selected="@(currentFollowUpFilter == "no_followups")">No Follow-ups</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Second Row - Date Filters -->
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">
+                            <i class="bi bi-calendar-event me-1"></i>Created Date Range
+                        </label>
+                        <div class="date-range-inputs">
+                            <input type="date" class="form-control" id="createdFromFilter" name="createdFrom"
+                                   value="@(ViewBag.CurrentFilters?.CreatedFrom?.ToString("yyyy-MM-dd") ?? "")" placeholder="From">
+                            <span class="date-separator">to</span>
+                            <input type="date" class="form-control" id="createdToFilter" name="createdTo"
+                                   value="@(ViewBag.CurrentFilters?.CreatedTo?.ToString("yyyy-MM-dd") ?? "")" placeholder="To">
+                        </div>
+                        <div class="invalid-feedback" id="createdDateError"></div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">
+                            <i class="bi bi-calendar-check me-1"></i>Last Follow-up Date Range
+                        </label>
+                        <div class="date-range-inputs">
+                            <input type="date" class="form-control" id="lastFollowUpFromFilter" name="lastFollowUpFrom"
+                                   value="@(ViewBag.CurrentFilters?.LastFollowUpFrom?.ToString("yyyy-MM-dd") ?? "")" placeholder="From">
+                            <span class="date-separator">to</span>
+                            <input type="date" class="form-control" id="lastFollowUpToFilter" name="lastFollowUpTo"
+                                   value="@(ViewBag.CurrentFilters?.LastFollowUpTo?.ToString("yyyy-MM-dd") ?? "")" placeholder="To">
+                        </div>
+                        <div class="invalid-feedback" id="followUpDateError"></div>
+                    </div>
+                </div>
+
+                <!-- Filter Actions -->
+                <div class="row">
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary me-2">
+                            <i class="bi bi-search me-1"></i>Apply Filters
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary" id="resetFilters">
+                            <i class="bi bi-arrow-clockwise me-1"></i>Reset
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Hidden fields for pagination and sorting -->
+                <input type="hidden" name="page" value="1" id="pageInput">
+                <input type="hidden" name="pageSize" value="@((ViewBag.Pagination as PaginationInfo)?.PageSize ?? 10)" id="pageSizeInput">
+                <input type="hidden" name="sortBy" value="@(ViewBag.CurrentFilters?.SortBy ?? "CreatedAt")" id="sortByInput">
+                <input type="hidden" name="sortOrder" value="@(ViewBag.CurrentFilters?.SortOrder ?? "desc")" id="sortOrderInput">
+            </form>
+        </div>
+    </div>
+    @if (Model?.Any() == true)
+    {
+        <!-- Results Summary and Sorting -->
+        @if (ViewBag.Pagination != null)
+        {
+            var pagination = ViewBag.Pagination as PaginationInfo;
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="results-summary">
+                    <span class="text-muted">
+                        Showing <strong>@pagination?.StartItem</strong> to <strong>@pagination?.EndItem</strong>
+                        of <strong>@pagination?.TotalCount</strong> requests
+                    </span>
+                </div>
+
+                <div class="sort-controls">
+                    <div class="dropdown">
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" onclick="applySorting('name', 'asc')">Name (A-Z)</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="applySorting('name', 'desc')">Name (Z-A)</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="applySorting('CreatedAt', 'desc')">Newest First</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="applySorting('CreatedAt', 'asc')">Oldest First</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="applySorting('lastfollowup', 'desc')">Recent Follow-up</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="applySorting('followups', 'desc')">Most Follow-ups</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <div class="table-responsive mt-4">
+            <table class="table table-hover modern-table" id="requestsTable">
+                <thead>
+                    <tr>
+                        <th scope="col"><i class="bi bi-person-plus me-2"></i>Lead Name</th>
+                        <th scope="col"><i class="bi bi-tag-fill me-2"></i>Reason</th>
+                        <th scope="col"><i class="bi bi-flag-fill me-2"></i>Status</th>
+                        <th scope="col"><i class="bi bi-hourglass-split me-2"></i>Follow-Ups</th>
+                        <th scope="col"><i class="bi bi-calendar-check me-2"></i>Last Follow-Up</th>
+                        <th scope="col"><i class="bi bi-person-plus me-2"></i>Created By</th>
+                        <th scope="col"><i class="bi bi-calendar-event me-2"></i>Created Date</th>
+                        <th scope="col"><i class="bi bi-bell-fill me-2"></i>Follow-Up Status</th>
+                        <th scope="col"><i class="bi bi-gear-fill me-2"></i>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var request in Model)
+                    {
+                     
+                            // Get status-specific follow-up data
+                            var followUpData = ViewBag.RequestFollowUpData as Dictionary<int, object>;
+                            var requestFollowUpInfo = followUpData?.ContainsKey(request.RequestId) == true ? followUpData[request.RequestId] : null;
+                            
+                            // Extract follow-up properties safely
+                            bool requiresFollowUp = false;
+                            bool isOverdue = false;
+                            bool maxReached = false;
+                            bool isManualFollowUp = false;
+                            string followUpStatusText = "Unknown";
+                            
+                            if (requestFollowUpInfo != null)
+                            {
+                                var infoType = requestFollowUpInfo.GetType();
+                                requiresFollowUp = (bool)(infoType.GetProperty("RequiresFollowUp")?.GetValue(requestFollowUpInfo) ?? false);
+                                isOverdue = (bool)(infoType.GetProperty("IsOverdue")?.GetValue(requestFollowUpInfo) ?? false);
+                                maxReached = (bool)(infoType.GetProperty("MaxFollowUpsReached")?.GetValue(requestFollowUpInfo) ?? false);
+                                followUpStatusText = (string)(infoType.GetProperty("StatusText")?.GetValue(requestFollowUpInfo) ?? "Unknown");
+                                
+                                var settings = infoType.GetProperty("Settings")?.GetValue(requestFollowUpInfo);
+                                if (settings != null)
+                                {
+                                    var settingsType = settings.GetType();
+                                    var intervalDays = (int)(settingsType.GetProperty("FollowUpIntervalDays")?.GetValue(settings) ?? 0);
+                                    isManualFollowUp = intervalDays <= 0;
+                                }
+                            }
+                        
+
+                        <tr data-reason="@(request.ReasonDescription ?? "")"
+                            data-comments="@(request.Comments?.ToLower() ?? "")"
+                            data-creator="@(request.CreatedByName ?? "")"
+                            data-status="@(request.StatusName ?? "")"
+                            data-has-followups="@request.HasFollowUps.ToString().ToLower()"
+                            data-created-date="@request.CreatedAt.ToString("yyyy-MM-dd")"
+                            data-last-followup-date="@(request.LastFollowUpDate?.ToString("yyyy-MM-dd") ?? "")"
+                            data-requires-followup="@requiresFollowUp.ToString().ToLower()"
+                            data-overdue-followup="@isOverdue.ToString().ToLower()"
+                            data-max-followups-reached="@maxReached.ToString().ToLower()">
+
+                            <td>
+                                <span class="fw-bold">@(request.person_FullName ?? "N/A")</span>
+                            </td>
+
+                            <td>
+                                <div class="reason-cell">
+                                    @if (!string.IsNullOrEmpty(request.ReasonDescription))
+                                    {
+                                        <span class="reason-text">@request.ReasonDescription</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">No reason specified</span>
+                                    }
+                                </div>
+                            </td>
+
+                            <td>
+                                <span>@(request.StatusName ?? "N/A")</span>
+                            </td>
+
+                            <td>
+                                <span class="badge bg-primary">@request.FollowUpCount</span>
+                            </td>
+
+                            <td>
+                                @DisplayDate(request.LastFollowUpDate)
+                            </td>
+
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-sm me-2">
+                                        <span class="avatar-initials">@(string.IsNullOrEmpty(request.CreatedByName) ? "?" : request.CreatedByName[0])</span>
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold">@(request.CreatedByName ?? "Unknown")</div>
+                                    </div>
+                                </div>
+                            </td>
+
+                            <td>
+                                <div>
+                                    <div class="fw-bold">@request.CreatedAt.ToString("MMM dd, yyyy")</div>
+                                    <small class="text-muted">@request.CreatedAt.ToString("HH:mm")</small>
+                                </div>
+                            </td>
+
+                            <td>
+                                @* Use status-specific follow-up logic *@
+                                @if (!requiresFollowUp)
+                                {
+                                    <!-- Status doesn't require follow-up -->
+                                    <span class="status-badge neutral">
+                                        <i class="bi bi-x-circle me-1"></i>Not Required
+                                    </span>
+                                }
+                                else if (maxReached)
+                                {
+                                    <!-- Max follow-ups reached (only for statuses with actual limits) -->
+                                    <span class="status-badge neutral">
+                                        <i class="bi bi-check-circle me-1"></i>Max Reached
+                                    </span>
+                                }
+                                else if (isOverdue)
+                                {
+                                    <!-- Overdue follow-up (only for scheduled follow-ups) -->
+                                    <span class="status-badge urgent">
+                                        <i class="bi bi-exclamation-triangle me-1"></i>Overdue
+                                    </span>
+                                }
+                                else if (isManualFollowUp)
+                                {
+                                    <!-- Problem Solving follow-up available (Applicant status) -->
+                                    <span class="status-badge medium">
+                                        <i class="bi bi-tools me-1"></i>Problem Solving Available
+                                    </span>
+                                }
+                                else if (requiresFollowUp)
+                                {
+                                    <!-- Scheduled follow-up required (Interested status) -->
+                                    <span class="status-badge high">
+                                        <i class="bi bi-clock me-1"></i>@followUpStatusText
+                                    </span>
+                                }
+                                else if (request.FollowUpCount > 0)
+                                {
+                                    <!-- Has follow-ups but no more required -->
+                                    <span class="status-badge low">
+                                        <i class="bi bi-check-circle me-1"></i>Completed
+                                    </span>
+                                }
+                                else
+                                {
+                                    <!-- No follow-ups at all -->
+                                    <span class="status-badge neutral">
+                                        <i class="bi bi-question-circle me-1"></i>No Follow-up
+                                    </span>
+                                }
+                            </td>
+
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a href="@Url.Action("FollowUpDetails", "followup", new { id = request.RequestId })"
+                                       class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-eye me-1"></i>View
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination Controls -->
+        @if (ViewBag.Pagination != null)
+        {
+            @await Html.PartialAsync("_PaginationPartial", (PaginationInfo)ViewBag.Pagination)
+        }
+    }
+    else
+    {
+        <div class="alert alert-info text-center mt-5">
+            <i class="bi bi-info-circle"></i> No requests found.
+        </div>
+
+        @if (ViewBag.Pagination != null)
+        {
+            var pagination = ViewBag.Pagination as PaginationInfo;
+            if (pagination?.TotalCount > 0)
+            {
+                <div class="text-center">
+                    <p class="text-muted">Try adjusting your filters to see more results.</p>
+                    <button type="button" class="btn btn-outline-primary" onclick="clearAllFilters()">
+                        <i class="bi bi-funnel me-1"></i>Clear All Filters
+                    </button>
+                </div>
+            }
+        }
+    }
+</div>
+
+<!-- Include all your existing styles -->
+<style>
+    /* Your existing styles remain the same */
+    .filter-section {
+        background: #f8f9fa;
+        border-radius: 12px;
+        border: 1px solid #dee2e6;
+        overflow: hidden;
+    }
+
+    .filter-header {
+        background: linear-gradient(135deg, #e9ecef, #dee2e6);
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid #dee2e6;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+        .filter-header h5 {
+            color: #495057;
+            font-weight: 600;
+            margin: 0;
+        }
+
+    .filter-content {
+        padding: 1.5rem;
+    }
+
+    .date-range-inputs {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+        .date-range-inputs input {
+            flex: 1;
+        }
+
+    .date-separator {
+        color: #6c757d;
+        font-size: 0.875rem;
+        font-weight: 500;
+        padding: 0 0.25rem;
+    }
+
+    .invalid-feedback {
+        display: block;
+        width: 100%;
+        margin-top: 0.25rem;
+        font-size: 0.875rem;
+        color: #dc3545;
+    }
+
+    .form-label {
+        font-weight: 500;
+        color: #495057;
+        margin-bottom: 0.5rem;
+        font-size: 0.875rem;
+    }
+
+        .form-label i {
+            color: #6c757d;
+        }
+
+    .modern-table {
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        border: 1px solid #e9ecef;
+    }
+
+        .modern-table thead {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .modern-table th {
+            color: #495057;
+            font-weight: 600;
+            padding: 1rem 0.75rem;
+            font-size: 0.875rem;
+            border: none;
+            white-space: nowrap;
+        }
+
+            .modern-table th i {
+                margin-right: 0.5rem;
+                font-size: 0.875rem;
+            }
+
+        .modern-table td {
+            padding: 1rem 0.75rem;
+            vertical-align: middle;
+            border-bottom: 1px solid #f1f3f4;
+        }
+
+        .modern-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+    .avatar-sm {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #6c757d, #495057);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+        font-size: 0.875rem;
+        flex-shrink: 0;
+    }
+
+    .avatar-initials {
+        color: white;
+        font-weight: 600;
+    }
+
+    .reason-cell, .comments-cell {
+        max-width: 200px;
+    }
+
+    .reason-text, .comments-text {
+        display: block;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+    }
+
+    .modern-table tbody tr:hover {
+        background-color: rgba(0, 123, 255, 0.04);
+        transition: background-color 0.2s ease;
+    }
+
+    .status-badge {
+        font-size: 0.75rem;
+        padding: 0.35rem 0.75rem;
+        border-radius: 20px;
+        font-weight: 500;
+        text-transform: capitalize;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        border: 1px solid transparent;
+        transition: all 0.2s ease;
+    }
+
+        .status-badge.urgent {
+            background-color: #fff5f5;
+            color: #dc3545;
+            border-color: #f5c6cb;
+        }
+
+        .status-badge.high {
+            background-color: #fffdf0;
+            color: #856404;
+            border-color: #ffeaa7;
+        }
+
+        .status-badge.medium {
+            background-color: #f0f9ff;
+            color: #0c5460;
+            border-color: #b3d9ff;
+        }
+
+        .status-badge.low {
+            background-color: #f8fff8;
+            color: #198754;
+            border-color: #c3e6cb;
+        }
+
+        .status-badge.neutral {
+            background-color: #f8f9fa;
+            color: #6c757d;
+            border-color: #dee2e6;
+        }
+
+    .badge.bg-primary {
+        background: linear-gradient(135deg, #0d6efd, #0a58ca) !important;
+        font-weight: 500;
+        padding: 0.35rem 0.65rem;
+        border-radius: 15px;
+    }
+
+    .btn-outline-primary, .btn-outline-secondary, .btn-outline-success {
+        border-radius: 20px;
+        font-size: 0.875rem;
+        padding: 0.375rem 0.75rem;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+
+        .btn-outline-primary:hover, .btn-outline-secondary:hover, .btn-outline-success:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(13, 110, 253, 0.2);
+        }
+
+    .form-control, .form-select {
+        border-radius: 8px;
+        border-color: #dee2e6;
+        font-size: 0.875rem;
+    }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+        }
+
+    .btn-group .btn {
+        border-radius: 0;
+    }
+
+        .btn-group .btn:first-child {
+            border-top-left-radius: 20px;
+            border-bottom-left-radius: 20px;
+        }
+
+        .btn-group .btn:last-child {
+            border-top-right-radius: 20px;
+            border-bottom-right-radius: 20px;
+        }
+
+    .results-summary {
+        font-size: 0.875rem;
+        color: #6c757d;
+    }
+
+    .sort-controls .dropdown-menu {
+        min-width: 180px;
+    }
+
+    /* Responsive Design */
+    @@media (max-width: 768px) {
+        .filter-content {
+            padding: 1rem;
+        }
+
+        .date-range-inputs {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .date-separator {
+            text-align: center;
+            padding: 0.25rem 0;
+        }
+
+        .d-flex.justify-content-between {
+            flex-direction: column;
+            gap: 1rem;
+        }
+    }
+</style>
+
+@section Scripts {
+    <script>
+        // Enhanced filter functionality
+        function validateDateRanges() {
+            let isValid = true;
+
+            const createdFrom = document.getElementById('createdFromFilter')?.value;
+            const createdTo = document.getElementById('createdToFilter')?.value;
+            const createdError = document.getElementById('createdDateError');
+
+            if (createdFrom && createdTo && createdFrom > createdTo) {
+                if (createdError) {
+                    createdError.textContent = 'From date cannot be later than To date';
+                    createdError.style.display = 'block';
+                }
+                isValid = false;
+            } else {
+                if (createdError) createdError.style.display = 'none';
+            }
+
+            const followUpFrom = document.getElementById('lastFollowUpFromFilter')?.value;
+            const followUpTo = document.getElementById('lastFollowUpToFilter')?.value;
+            const followUpError = document.getElementById('followUpDateError');
+
+            if (followUpFrom && followUpTo && followUpFrom > followUpTo) {
+                if (followUpError) {
+                    followUpError.textContent = 'From date cannot be later than To date';
+                    followUpError.style.display = 'block';
+                }
+                isValid = false;
+            } else {
+                if (followUpError) followUpError.style.display = 'none';
+            }
+
+            return isValid;
+        }
+
+        // Apply sorting
+        function applySorting(sortBy, sortOrder) {
+            const sortByInput = document.getElementById('sortByInput');
+            const sortOrderInput = document.getElementById('sortOrderInput');
+            const pageInput = document.getElementById('pageInput');
+            const form = document.getElementById('filterForm');
+
+            if (sortByInput) sortByInput.value = sortBy;
+            if (sortOrderInput) sortOrderInput.value = sortOrder;
+            if (pageInput) pageInput.value = 1; // Reset to first page
+            if (form) form.submit();
+        }
+
+        // Clear all filters
+        function clearAllFilters() {
+            const form = document.getElementById('filterForm');
+            if (!form) return;
+
+            const inputs = form.querySelectorAll('input[type="date"], select');
+            inputs.forEach(input => input.value = '');
+
+            const pageInput = document.getElementById('pageInput');
+            if (pageInput) pageInput.value = 1;
+
+            form.submit();
+        }
+
+        // Reset filters button
+        const resetButton = document.getElementById('resetFilters');
+        if (resetButton) {
+            resetButton.addEventListener('click', clearAllFilters);
+        }
+
+        // Form validation on submit
+        const filterForm = document.getElementById('filterForm');
+        if (filterForm) {
+            filterForm.addEventListener('submit', function(e) {
+                if (!validateDateRanges()) {
+                    e.preventDefault();
+                    return;
+                }
+                // Reset to first page when applying filters
+                const pageInput = document.getElementById('pageInput');
+                if (pageInput) pageInput.value = 1;
+            });
+        }
+
+        // Page size change function (called from pagination partial)
+        function changePageSize(newPageSize) {
+            const pageSizeInput = document.getElementById('pageSizeInput');
+            const pageInput = document.getElementById('pageInput');
+            const form = document.getElementById('filterForm');
+
+            if (pageSizeInput) pageSizeInput.value = newPageSize;
+            if (pageInput) pageInput.value = 1;
+            if (form) form.submit();
+        }
+
+        // Go to page function (called from pagination partial)
+        function goToPage(pageNumber) {
+            const pageInput = document.getElementById('pageInput');
+            const form = document.getElementById('filterForm');
+
+            if (pageInput) pageInput.value = pageNumber;
+            if (form) form.submit();
+        }
+
+        // Clear filters functionality
+        const clearFiltersButton = document.getElementById('clearFilters');
+        if (clearFiltersButton) {
+            clearFiltersButton.addEventListener('click', function() {
+                clearAllFilters();
+            });
+        }
+
+        // AJAX load follow-up modal (existing functionality)
+        document.addEventListener("click", function (e) {
+            const btn = e.target.closest(".open-followup-modal");
+            if (!btn) return;
+
+            e.preventDefault();
+            const requestId = btn.dataset.requestId;
+            if (!requestId) return;
+
+            if (typeof $ !== 'undefined') {
+                $.ajax({
+                    url: `/FollowUp/CreateFollowUpForm?requestId=${requestId}`,
+                    type: 'GET',
+                    success: function (html) {
+                        $("body").append(`<div class="modal fade" id="followUpModal" tabindex="-1" aria-hidden="true">${html}</div>`);
+                        $("#followUpModal").modal("show");
+                    },
+                    error: function () {
+                        alert("Failed to load follow-up form.");
+                    }
+                });
+
+                $(document).on('hidden.bs.modal', '#followUpModal', function () {
+                    $(this).remove();
+                });
+            }
+        });
+    </script>
+}
+
+@functions {
+    public IHtmlContent DisplayDate(DateTime? dt)
+    {
+        return dt.HasValue
+            ? new HtmlString(dt.Value.ToString("MMM dd, yyyy"))
+            : new HtmlString("<span class='text-muted'>No Follow-ups</span>");
+    }
+
+    public IHtmlContent DisplayValue(string? val)
+    {
+        return string.IsNullOrWhiteSpace(val)
+            ? new HtmlString("<span class='badge bg-secondary text-light'>Not Provided</span>")
+            : new HtmlString(System.Net.WebUtility.HtmlEncode(val));
+    }
+
+    public string GetRowClass(string? urgencyCssClass)
+    {
+        return urgencyCssClass switch
+        {
+            "urgent" => "row-urgent",
+            "high" => "row-high",
+            "medium" => "row-medium",
+            "low" => "row-low",
+            _ => ""
+        };
+    }
+
+    public string GetBadgeClass(string? cssClass)
+    {
+        return cssClass switch
+        {
+            "urgent" => "urgent",
+            "high" => "high",
+            "medium" => "medium",
+            "low" => "low",
+            _ => "neutral"
+        };
+    }
+}

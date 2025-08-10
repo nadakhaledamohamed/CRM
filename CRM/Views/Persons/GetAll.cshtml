@@ -1,6 +1,9 @@
 ﻿@using Microsoft.AspNetCore.Html 
 @using System.Text.Json
 @using Microsoft.AspNetCore.Mvc.ViewFeatures
+@using CRM.Helpers
+
+@inject FollowUpHelper FollowUpHelper
 
 
 @model List<CRM.Models.PersonRequestViewModel>
@@ -12,6 +15,9 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
 <link href="~/css/light.css" rel="stylesheet" />
 <div class="container my-5">
+    <a asp-action="Index" asp-controller="Home" class="btn-glow me-3">
+        <i class="bi bi-arrow-left-circle"></i> Home
+    </a>
     <h2 class="GetAll-header"> <i class="bi bi-people-fill"></i> All Person Requests </h2>
 
     <!-- 🔍 Dynamic Search Filters -->
@@ -21,91 +27,158 @@
         <h4 class="mb-3"><i class="bi bi-search"></i> Filter & Search</h4>
         <div id="dynamic-filters"></div>
         <div class="text-end mt-3">
-            <button type="button" class="btn btn-outline-primary" id="addFilter"><i class="bi bi-plus"></i> Add Condition</button>
+            <button type="button" class="btn btn-glow" id="addFilter"><i class="bi bi-plus"></i> Add Condition</button>
         </div>
         <div class="text-center mt-4">
-            <button type="submit" class="btn btn-primary"><i class="bi bi-search"></i> Search</button>
+            <button type="submit" class="btn btn-glow"><i class="bi bi-search"></i> Search</button>
             <a href="@Url.Action("GetAll")" class="btn btn-outline-secondary"><i class="bi bi-arrow-clockwise"></i> Reset</a>
         </div>
+        @Html.AntiForgeryToken()
+
     </form>
-
-
+    <div class="row mb-4 align-items-center">
+        <div class="col-md-6">
+            <a asp-action="create" asp-controller="persons" class="btn-glow me-3">
+                <i class="bi bi-person-plus"></i> Add Lead
+            </a>
+        </div>
+        <div class="col-md-6 text-end">
+            <button type="button" class="btn btn-glow" id="exportPdfBtn">
+                <i class="bi bi-file-earmark-pdf"></i> Export to PDF
+            </button>
+            @* <button type="button" class="btn btn-success" onclick="exportToExcel()"> *@
+            @*     <i class="bi bi-file-earmark-spreadsheet"></i> Export to Excel *@
+            @* </button> *@
+        </div>
+    </div>
     <!-- Data Cards----------------- -->
     <div id="cards-wrapper">
-    @if (Model.Any())
-    {
-        <div class="row g-4">
-            @foreach (var item in Model)
-            {
-                <div class="col-md-6 col-lg-4">
-                    <div class="neon-card">
-                        <div class="neon-header">
-                            <div class="neon-avatar">
-                                <span>@item.FirstName[0]@item.LastName[0]</span>
+        @if (Model.Any())
+        {
+            <div class="row g-4">
+                @foreach (var item in Model)
+                {
+                    <div class="col-md-6 col-lg-4">
+
+                        <div class="neon-card">
+
+                            @*  to view closed requests as closed and canot be edited if request is cloes add overlay*@
+
+                            @*   <div class="neon-card request-card @(item.IsRequestClosed ? "closed overlay-closed" : "")" *@
+                            @*   data-can-open="@item.CanOpenDetails.ToString().ToLower()"
+                             data-request-id="@item.ID"> *@
+
+
+                            @* cards info *@
+                            <div class="neon-header">
+                                <div class="neon-avatar">
+                                    <span>@item.FirstName[0]</span>
+                                </div>
+                                <h5>@item.FirstName</h5>
+                                <p>@item.UserTypeName</p>
                             </div>
-                            <h5>@item.FirstName @item.LastName</h5>
-                            <p>@item.UserTypeName</p>
-                        </div>
-                        <div class="neon-info">
-                            <div><i class="bi bi-envelope"></i> <span class="info-text">@item.Email</span></div>
-                            <div><i class="bi bi-phone"></i> <span class="custom-badge">@item.Phone</span></div>
-                            <div><i class="bi bi-credit-card"></i> <span class="custom-badge">National ID: @item.NationalId</span></div>
-                            <div><i class="bi bi-hourglass-split"></i> <span class="custom-badge">Follow-Ups: @item.FollowUpCount</span></div>
-                            <div><i class="bi bi-calendar-check"></i> <span class="custom-badge">Last Follow-Up: @DisplayDate(item.LastFollowUpDate)</span></div>
-                            <div><i class="bi bi-shield-check"></i> <span class="custom-badge">Status: @item.StatusName</span></div>
-                            <hr />
-                            <div><i class="bi bi-person-badge"></i> Created By: @item.Person_CreatedByName</div>
-                            <div><i class="bi bi-calendar3"></i> Created: @item.Person_CreatedAt.ToString("MMM dd, yyyy")</div>
-                        </div>
-                        <div class="text-center mt-3">
-                            <a href="@Url.Action("Details", "Persons", new { id = item.PersonID })" class="btn btn-glow w-100">
-                                <i class="bi bi-eye"></i> View Details
-                            </a>
+                            <div class="neon-info">
+                                @* <div><i class="bi bi-envelope"></i> <span class="info-text">@DisplayValue(item.Email)</span></div> *@
+                                <div><i class="bi bi-phone"></i> <span class="custom-badge">@item.Phone</span></div>
+                                @* <div><i class="bi bi-credit-card"></i> <span class="custom-badge">Whats App: @DisplayValue(item.whatsApp)</span></div> *@
+                                @* <div><i class="bi bi-hourglass-split"></i> <span class="custom-badge">High School: @item.CertificateId</span></div> *@
+                                @* <div><i class="bi bi-calendar-check"></i> <span class="custom-badge">Last Follow-Up: @DisplayDate(item.LastFollowUpDate)</span></div> *@
+                                @* <div><i class="bi bi-shield-check"></i> <span class="custom-badge">Nationality: @item.NationalityName</span></div> *@
+                                <!--  Follow-Up Indicator -->
+                          
+                                @* @if (item.RequiresFollowUp) *@
+                                @* { *@
+                                @*     <div> *@
+                                @*         <i class="bi bi-bell-fill"></i> *@
+                                @*         <span class="btn btn-sm btn-outline-warning follow-up-btn" *@
+                                @*         data-request-id="@item.ID" *@
+                                @*         data-person-id="@item.PersonID"> *@
+                                @*             @item.FollowUpStatusText *@
+                                @*         </span> *@
+                                @*     </div> *@
+                                @* } *@
+                                @* else *@
+                                @* { *@
+                                @*     <div> *@
+                                @*         <i class="bi bi-check-circle"></i> *@
+                                @*         <span class="custom-badge text-muted">No Follow-Up Needed</span> *@
+                                @*     </div> *@
+                                @* } *@
+
+                                <hr />
+                                <div><i class="bi bi-person-badge"></i> Created By: @item.Person_CreatedByName</div>
+                                <div><i class="bi bi-calendar3"></i> Created: @item.Person_CreatedAt.ToString("MMM dd, yyyy")</div>
+                            </div>
+
+
+
+                            <div class="text-center mt-3">
+                                <a href="@Url.Action("Details", "Persons", new { id = item.PersonID })" class="btn btn-glow w-100">
+                                    <i class="bi bi-eye"></i> View Details
+                                </a>
+                            </div>
+
+                            @*  @if (!item.IsRequestClosed)
+                            {
+                                <div class="text-center mt-3">
+                                    <a href="@Url.Action("Details", "Persons", new { id = item.PersonID })"
+                                       class="btn btn-glow w-100 view-details-btn"
+                                       data-person-id="@item.PersonID">
+                                        <i class="bi bi-eye"></i> View Details
+                                    </a>
+                                </div>
+                            } *@
                         </div>
                     </div>
-                </div>
-            }
-        </div>
+                }
+            </div>
 
-        <!-- Pagination -->
-        @if (ViewBag.TotalPages > 1)
-        {
-            <nav class="mt-4">
-                <ul class="pagination justify-content-center">
-                    @if (ViewBag.CurrentPage > 1)
-                    {
-                        <li class="page-item">
-                            <a class="page-link" href="@GetPageUrl(ViewBag.CurrentPage - 1)">«</a>
-                        </li>
-                    }
-                    @for (int i = Math.Max(1, ViewBag.CurrentPage - 2); i <= Math.Min(ViewBag.TotalPages, ViewBag.CurrentPage + 2); i++)
-                    {
-                        <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
-                            <a class="page-link" href="@GetPageUrl(i)">@i</a>
-                        </li>
-                    }
-                    @if (ViewBag.CurrentPage < ViewBag.TotalPages)
-                    {
-                        <li class="page-item">
-                            <a class="page-link" href="@GetPageUrl(ViewBag.CurrentPage + 1)">»</a>
-                        </li>
-                    }
-                </ul>
-            </nav>
+            <!-- Pagination -->
+            @if (ViewBag.TotalPages > 1)
+            {
+                <nav class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        @if (ViewBag.CurrentPage > 1)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" href="@GetPageUrl(ViewBag.CurrentPage - 1)">«</a>
+                            </li>
+                        }
+                        @for (int i = Math.Max(1, ViewBag.CurrentPage - 2); i <= Math.Min(ViewBag.TotalPages, ViewBag.CurrentPage + 2); i++)
+                        {
+                            <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                                <a class="page-link" href="@GetPageUrl(i)">@i</a>
+                            </li>
+                        }
+                        @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" href="@GetPageUrl(ViewBag.CurrentPage + 1)">»</a>
+                            </li>
+                        }
+                    </ul>
+                </nav>
+            }
         }
-    }
-    else
-    {
-        <div class="alert alert-info text-center">
-            <i class="bi bi-info-circle"></i> No person requests found matching your criteria.
-        </div>
-    }
+        else
+        {
+            <div class="alert alert-info text-center">
+                <i class="bi bi-info-circle"></i> No person requests found matching your criteria.
+            </div>
+        }
+
+    </div>
 </div>
 
     @section Scripts {
-       <script>
+        <script>
 
-                      // COMPLETE FIXED JAVASCRIPT FOR AJAX PAGINATION
+            
+            function getAntiForgeryToken() {
+            const token = document.querySelector("input[name='__RequestVerificationToken']");
+            return token ? token.value : "";
+            }
+            //  JAVASCRIPT FOR AJAX PAGINATION
 
             const statusOptions = @Html.Raw(Json.Serialize(ViewBag.StatusOptions));
             const userTypeOptions = @Html.Raw(Json.Serialize(ViewBag.UserTypeOptions));
@@ -113,166 +186,192 @@
 
             let filterIndex = 0;
 
+            document.getElementById('exportPdfBtn').addEventListener('click', function() {
+            // Show loading state
+            this.innerHTML = '<i class="bi bi-hourglass-split"></i> Generating PDF...';
+            this.disabled = true;
+
+            // Get current form data to maintain filters
+            const form = document.getElementById('filterForm');
+            const params = serializeFormData(form);
+
+            // Create export URL with current filters
+            const exportUrl = '@Url.Action("ExportToPdf")' + '?' + params.toString();
+
+            // Create a temporary link to download the PDF
+            const link = document.createElement('a');
+            link.href = exportUrl;
+            link.download = `PersonRequests_${new Date().getFullYear()}${(new Date().getMonth()+1).toString().padStart(2,'0')}${new Date().getDate().toString().padStart(2,'0')}.pdf`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            // Reset button state after a short delay
+            setTimeout(() => {
+            this.innerHTML = '<i class="bi bi-file-earmark-pdf"></i> Export to PDF';
+            this.disabled = false;
+            }, 2000);
+            });
             // Clean up all existing event listeners
             function cleanupEventListeners() {
-                const addBtn = document.getElementById("addFilter");
-                if (addBtn) {
-                    const newAddBtn = addBtn.cloneNode(true);
-                    addBtn.parentNode.replaceChild(newAddBtn, addBtn);
-                }
+            const addBtn = document.getElementById("addFilter");
+            if (addBtn) {
+            const newAddBtn = addBtn.cloneNode(true);
+            addBtn.parentNode.replaceChild(newAddBtn, addBtn);
+            }
 
-                const form = document.getElementById("filterForm");
-                if (form) {
-                    const newForm = form.cloneNode(true);
-                    form.parentNode.replaceChild(newForm, form);
-                }
+            const form = document.getElementById("filterForm");
+            if (form) {
+            const newForm = form.cloneNode(true);
+            form.parentNode.replaceChild(newForm, form);
+            }
             }
 
             // Attach event listeners (called only once)
             function attachEventListeners() {
-                const addBtn = document.getElementById("addFilter");
-                if (addBtn) {
-                    addBtn.onclick = function() {
-                        addFilterRow();
-                    };
-                }
+            const addBtn = document.getElementById("addFilter");
+            if (addBtn) {
+            addBtn.onclick = function() {
+            addFilterRow();
+            };
+            }
 
-                const form = document.getElementById("filterForm");
-                if (form) {
-                    form.onsubmit = function(e) {
-                        e.preventDefault();
-                        handleSearch(this);
-                    };
-                }
+            const form = document.getElementById("filterForm");
+            if (form) {
+            form.onsubmit = function(e) {
+            e.preventDefault();
+            handleSearch(this);
+            };
+            }
 
-                const resetBtn = document.querySelector('a[href*="GetAll"]:not([type="submit"])');
-                if (resetBtn) {
-                    resetBtn.onclick = function(e) {
-                        e.preventDefault();
-                        window.location.href = this.href;
-                    };
-                }
+            const resetBtn = document.querySelector('a[href*="GetAll"]:not([type="submit"])');
+            if (resetBtn) {
+            resetBtn.onclick = function(e) {
+            e.preventDefault();
+            window.location.href = this.href;
+            };
+            }
             }
 
             // Handle remove button clicks using event delegation
             document.addEventListener('click', function(e) {
-                if (e.target.closest('.remove-filter')) {
-                    e.preventDefault();
-                    e.stopPropagation();
+            if (e.target.closest('.remove-filter')) {
+            e.preventDefault();
+            e.stopPropagation();
 
-                    const filterSet = e.target.closest('.filter-set');
-                    if (filterSet) {
-                        filterSet.remove();
-                    }
-                }
+            const filterSet = e.target.closest('.filter-set');
+            if (filterSet) {
+            filterSet.remove();
+            }
+            }
             });
 
-            // FIXED: Properly serialize form data including dynamic filters
+            //  Properly serialize form data including dynamic filters
             function serializeFormData(form) {
-                const formData = new FormData(form);
-                const params = new URLSearchParams();
+            const formData = new FormData(form);
+            const params = new URLSearchParams();
 
-                // Add all form data to params
-                for (const [key, value] of formData.entries()) {
-                    if (value && value.toString().trim() !== '') {
-                        params.append(key, value);
-                    }
-                }
-
-                return params;
+            // Add all form data to params
+            for (const [key, value] of formData.entries()) {
+            if (value && value.toString().trim() !== '') {
+            params.append(key, value);
+            }
             }
 
-            // FIXED: Handle search submission with proper serialization
+            return params;
+            }
+
+            //  Handle search submission with proper serialization
             function handleSearch(form, pageNumber = 1) {
-                const params = serializeFormData(form);
+            const params = serializeFormData(form);
 
-                // Always set the page number
-                params.set('page', pageNumber);
+            // Always set the page number
+            params.set('page', pageNumber);
 
-                const url = form.action + "?" + params.toString();
+            const url = form.action + "?" + params.toString();
 
-                fetch(url, {
-                    method: 'GET',
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest' // Optional: helps server know it's AJAX
-                    }
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.text();
-                })
-                .then(html => {
-                    updateResults(html);
+            fetch(url, {
+            method: 'GET',
+            headers: {
+            'X-Requested-With': 'XMLHttpRequest' //  helps server know it's AJAX
+            }
+            })
+            .then(response => {
+            if (!response.ok) {
+            throw new Error('Network response was not ok');
+            }
+            return response.text();
+            })
+            .then(html => {
+            updateResults(html);
 
-                    // FIXED: Update browser URL without page refresh
-                    window.history.pushState({}, '', url);
-                })
-                .catch(error => {
-                    console.error('Search error:', error);
-                    alert('An error occurred while searching. Please try again.');
-                });
+            // Update browser URL without page refresh
+            window.history.pushState({}, '', url);
+            })
+            .catch(error => {
+            console.error('Search error:', error);
+            alert('An error occurred while searching. Please try again.');
+            });
             }
 
             // FIXED: Update results and pagination
             function updateResults(html) {
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(html, 'text/html');
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
 
-                // Update results section
-                const cardsWrapper = document.getElementById("cards-wrapper");
-                const newCardsWrapper = doc.getElementById("cards-wrapper");
+            // Update results section
+            const cardsWrapper = document.getElementById("cards-wrapper");
+            const newCardsWrapper = doc.getElementById("cards-wrapper");
 
-                if (cardsWrapper && newCardsWrapper) {
-                    cardsWrapper.innerHTML = newCardsWrapper.innerHTML;
-                }
+            if (cardsWrapper && newCardsWrapper) {
+            cardsWrapper.innerHTML = newCardsWrapper.innerHTML;
+            }
 
-                // FIXED: Update pagination with proper event handlers
-                const existingPagination = document.querySelector("nav.mt-4");
-                if (existingPagination) {
-                    existingPagination.remove();
-                }
+            // FIXED: Update pagination with proper event handlers
+            const existingPagination = document.querySelector("nav.mt-4");
+            if (existingPagination) {
+            existingPagination.remove();
+            }
 
-                const newPagination = doc.querySelector("nav.mt-4");
-                if (newPagination) {
-                    // Clone the pagination
-                    const paginationClone = newPagination.cloneNode(true);
+            const newPagination = doc.querySelector("nav.mt-4");
+            if (newPagination) {
+            // Clone the pagination
+            const paginationClone = newPagination.cloneNode(true);
 
-                    // Update all pagination links to use AJAX
-                    const paginationLinks = paginationClone.querySelectorAll('a.page-link');
-                    paginationLinks.forEach(link => {
-                        const href = link.getAttribute('href');
-                        if (href && href !== '#') {
-                            // Extract page number from URL
-                            const urlParams = new URLSearchParams(href.split('?')[1]);
-                            const pageNumber = urlParams.get('page') || 1;
+            // Update all pagination links to use AJAX
+            const paginationLinks = paginationClone.querySelectorAll('a.page-link');
+            paginationLinks.forEach(link => {
+            const href = link.getAttribute('href');
+            if (href && href !== '#') {
+            // Extract page number from URL
+            const urlParams = new URLSearchParams(href.split('?')[1]);
+            const pageNumber = urlParams.get('page') || 1;
 
-                            // Replace with AJAX call
-                            link.setAttribute('href', '#');
-                            link.onclick = function(e) {
-                                e.preventDefault();
-                                goToPage(parseInt(pageNumber));
-                                return false;
-                            };
-                        }
-                    });
+            // Replace with AJAX call
+            link.setAttribute('href', '#');
+            link.onclick = function(e) {
+            e.preventDefault();
+            goToPage(parseInt(pageNumber));
+            return false;
+            };
+            }
+            });
 
-                    // Insert updated pagination
-                    cardsWrapper.appendChild(paginationClone);
-                }
+            // Insert updated pagination
+            cardsWrapper.appendChild(paginationClone);
+            }
 
-                // Recalculate filter index
-                recalculateFilterIndex();
+            // Recalculate filter index
+            recalculateFilterIndex();
             }
 
             // FIXED: Handle pagination clicks with AJAX
             function goToPage(page) {
-                const form = document.getElementById("filterForm");
-                if (!form) return;
+            const form = document.getElementById("filterForm");
+            if (!form) return;
 
-                // Call handleSearch with the specific page number
-                handleSearch(form, page);
+            // Call handleSearch with the specific page number
+            handleSearch(form, page);
             }
 
             // Make goToPage globally available
@@ -280,125 +379,281 @@
 
             // Properly recalculate the next available filter index
             function recalculateFilterIndex() {
-                const existingFilters = document.querySelectorAll(".filter-set");
-                let maxIndex = -1;
+            const existingFilters = document.querySelectorAll(".filter-set");
+            let maxIndex = -1;
 
-                existingFilters.forEach(filter => {
-                    const inputs = filter.querySelectorAll('input[name*="filters["], select[name*="filters["]');
-                    inputs.forEach(input => {
-                        const match = input.name.match(/filters\[(\d+)\]/);
-                        if (match) {
-                            maxIndex = Math.max(maxIndex, parseInt(match[1]));
-                        }
-                    });
-                });
-
-                filterIndex = maxIndex + 1;
+            existingFilters.forEach(filter => {
+            const inputs = filter.querySelectorAll('input[name*="filters["], select[name*="filters["]');
+            inputs.forEach(input => {
+            const match = input.name.match(/filters\[(\d+)\]/);
+            if (match) {
+            maxIndex = Math.max(maxIndex, parseInt(match[1]));
             }
-
-            // Add a new filter row
-            function addFilterRow(field = "", op = "equals", val = "") {
-                const container = document.getElementById('dynamic-filters');
-                const row = document.createElement('div');
-                row.className = 'filter-set row g-3 align-items-end mt-2';
-
-                const currentIndex = filterIndex;
-
-                row.innerHTML = `
-                    <div class="col-md-3">
-                        <label class="form-label">Field</label>
-                        <select name="filters[${currentIndex}].Field" class="form-select filter-field" onchange="renderValueControl(this, ${currentIndex}, '')">
-                            <option value="">-- Select Field --</option>
-                            <option value="StatusId" ${field === "StatusId" ? 'selected' : ''}>Status</option>
-                            <option value="UserType" ${field === "UserType" ? 'selected' : ''}>User Type</option>
-                            <option value="Email" ${field === "Email" ? 'selected' : ''}>Email</option>
-                            <option value="Phone" ${field === "Phone" ? 'selected' : ''}>Phone</option>
-                            <option value="NationalId" ${field === "NationalId" ? 'selected' : ''}>National ID</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3">
-                        <label class="form-label">Operator</label>
-                        <select name="filters[${currentIndex}].Operator" class="form-select">
-                            <option value="equals" ${op === "equals" ? 'selected' : ''}>is</option>
-                            <option value="not_equals" ${op === "not_equals" ? 'selected' : ''}>is not</option>
-                            <option value="contains" ${op === "contains" ? 'selected' : ''}>contains</option>
-                            <option value="not_contains" ${op === "not_contains" ? 'selected' : ''}>does not contain</option>
-                        </select>
-                    </div>
-                    <div class="col-md-4 value-container"></div>
-                    <div class="col-md-2">
-                        <label class="form-label d-block">&nbsp;</label>
-                        <button type="button" class="btn btn-danger remove-filter">
-                            <i class="bi bi-x-lg"></i>
-                        </button>
-                    </div>`;
-
-                container.appendChild(row);
-
-                const fieldSelect = row.querySelector('.filter-field');
-                renderValueControl(fieldSelect, currentIndex, val);
-
-                filterIndex++;
-            }
-
-            // Render value control based on field type
-            function renderValueControl(selectElement, index, selectedVal) {
-                const field = selectElement.value;
-                const container = selectElement.closest('.filter-set');
-                const valueContainer = container.querySelector('.value-container');
-                let html = '';
-
-                if (field === 'UserType') {
-                    html = `<label class="form-label">Value</label><select name="filters[${index}].Value" class="form-select">`;
-                    for (const key in userTypeOptions) {
-                        html += `<option value="${key}" ${key == selectedVal ? 'selected' : ''}>${userTypeOptions[key]}</option>`;
-                    }
-                    html += `</select>`;
-                } else if (field === 'StatusId') {
-                    html = `<label class="form-label">Value</label><select name="filters[${index}].Value" class="form-select">`;
-                    for (const key in statusOptions) {
-                        html += `<option value="${key}" ${key == selectedVal ? 'selected' : ''}>${statusOptions[key]}</option>`;
-                    }
-                    html += `</select>`;
-                } else if (field) {
-                    html = `<label class="form-label">Value</label><input name="filters[${index}].Value" class="form-control" placeholder="Enter value" value="${selectedVal}" />`;
-                }
-
-                valueContainer.innerHTML = html;
-            }
-
-            // Initialize everything when page loads
-            window.addEventListener("DOMContentLoaded", function() {
-                cleanupEventListeners();
-                attachEventListeners();
-
-                if (initialFilters && initialFilters.length > 0) {
-                    initialFilters.forEach(f => addFilterRow(f.Field, f.Operator, f.Value));
-                } else {
-                    addFilterRow();
-                }
+            });
             });
 
+            filterIndex = maxIndex + 1;
+            }
+
+            
+       //  addFilterRow function with dynamic operators if it is drop down show is and is not only other show contains and does not contains also
+          function addFilterRow(field = "", op = "equals", val = "") {
+            const container = document.getElementById('dynamic-filters');
+            const row = document.createElement('div');
+            row.className = 'filter-set row g-3 align-items-end mt-2';
+
+            const currentIndex = filterIndex;
+              // <option value="UserType" ${field === "UserType" ? 'selected' : ''}>User Type</option>
+            row.innerHTML = `
+            <div class="col-md-3">
+            <label class="form-label">Field</label>
+            <select name="filters[${currentIndex}].Field" class="form-select filter-field" onchange="handleFieldChange(this, ${currentIndex}, '')">
+            <option value="">-- Select Field --</option>
+              <option value="FirstName" ${field === "FirstName" ? 'selected' : ''}>Lead Name</option>
+           
+            <option value="Email" ${field === "Email" ? 'selected' : ''}>Email</option>
+            <option value="Phone" ${field === "Phone" ? 'selected' : ''}>Phone</option>
+            <option value="NationalId" ${field === "NationalId" ? 'selected' : ''}>National ID</option>
+            </select>
+            </div>
+            <div class="col-md-3">
+            <label class="form-label">Operator</label>
+            <select name="filters[${currentIndex}].Operator" class="form-select operator-select">
+            </select>
+            </div>
+            <div class="col-md-4 value-container"></div>
+            <div class="col-md-2">
+            <label class="form-label d-block">&nbsp;</label>
+            <button type="button" class="btn btn-danger remove-filter">
+            <i class="bi bi-x-lg"></i>
+            </button>
+            </div>`;
+
+            container.appendChild(row);
+
+            const fieldSelect = row.querySelector('.filter-field');
+            // Initialize operators and value control
+            handleFieldChange(fieldSelect, currentIndex, val, op);
+
+            filterIndex++;
+        }
+
+        // New function to handle field changes and update operators accordingly
+        function handleFieldChange(selectElement, index, selectedVal, selectedOp = "equals") {
+            const field = selectElement.value;
+            const container = selectElement.closest('.filter-set');
+            const operatorSelect = container.querySelector('.operator-select');
+
+            // Clear operator dropdown
+            operatorSelect.innerHTML = '';
+
+            if (field) {
+                // Define which fields are dropdowns (only equality operators)
+                const dropdownFields = ['UserType', 'StatusId'];
+
+                if (dropdownFields.includes(field)) {
+                    // For dropdown fields, only show equality operators
+                    operatorSelect.innerHTML = `
+                        <option value="equals" ${selectedOp === "equals" ? 'selected' : ''}>is</option>
+                        <option value="not_equals" ${selectedOp === "not_equals" ? 'selected' : ''}>is not</option>
+                    `;
+                }
+                 else if (field === 'FirstName') {
+             // For FirstName, only show starts_with and contains
+             operatorSelect.innerHTML = `
+                 <option value="starts_with" ${selectedOp === "starts_with" ? 'selected' : ''}>starts with</option>
+                 <option value="contains" ${selectedOp === "contains" ? 'selected' : ''}>contains</option>
+             `;}else {
+                    // For text fields, show all operators
+                    operatorSelect.innerHTML = `
+                        <option value="equals" ${selectedOp === "equals" ? 'selected' : ''}>is</option>
+                        <option value="not_equals" ${selectedOp === "not_equals" ? 'selected' : ''}>is not</option>
+                        <option value="contains" ${selectedOp === "contains" ? 'selected' : ''}>contains</option>
+                        <option value="not_contains" ${selectedOp === "not_contains" ? 'selected' : ''}>does not contain</option>
+                    `;
+                }
+            }
+
+            // Update value control
+            renderValueControl(selectElement, index, selectedVal);
+        }
+
+        // Make the function globally available
+        window.handleFieldChange = handleFieldChange;
+            // Render value control based on field type
+            // Fixed renderValueControl function - add this to replace your existing one
+            function renderValueControl(selectElement, index, selectedVal) {
+            const field = selectElement.value;
+            const container = selectElement.closest('.filter-set');
+            const valueContainer = container.querySelector('.value-container');
+            let html = '';
+
+            if (field === 'UserType') {
+            html = `<label class="form-label">Value</label><select name="filters[${index}].Value" class="form-select">`;
+           // Add empty option first
+            html += `<option value="">-- Select User Type --</option>`;
+            for (const key in userTypeOptions) {
+            html += `<option value="${key}" ${key == selectedVal ? 'selected' : ''}>${userTypeOptions[key]}</option>`;
+            }
+            html += `</select>`;
+            } else if (field === 'StatusId') {
+            html = `<label class="form-label">Value</label><select name="filters[${index}].Value" class="form-select">`;
+           // Add empty option first
+            html += `<option value="">-- Select Status --</option>`;
+            for (const key in statusOptions) {
+            html += `<option value="${key}" ${key == selectedVal ? 'selected' : ''}>${statusOptions[key]}</option>`;
+            }
+            html += `</select>`;
+                } 
+                else if (field === 'FirstName') {
+           // Special placeholder text for FirstName with enhanced styling
+            html = `<label class="form-label">Lead Name</label>
+                    <input name="filters[${index}].Value"
+                           class="form-control"
+                           placeholder="Enter Lead name..."
+                           value="${selectedVal}"
+                           autocomplete="given-name" />`;
+        }
+            else if (field) {
+            html = `<label class="form-label">Value</label><input name="filters[${index}].Value" class="form-control" placeholder="Enter value" value="${selectedVal}" />`;
+            }
+
+            valueContainer.innerHTML = html;
+            }
+
+            window.addEventListener("DOMContentLoaded", function() {
+            cleanupEventListeners();
+            attachEventListeners();
+
+            if (initialFilters && initialFilters.length > 0) {
+            initialFilters.forEach(f => addFilterRow(f.Field, f.Operator, f.Value));
+            } else {
+            addFilterRow();
+            }
+            });
+                    // Export to Excel function
+             // Export to Excel function (corrected with Bootstrap Icons)
+        function exportToExcel() {
+            // Get the export button to show loading state
+            const exportBtn = document.querySelector('button[onclick="exportToExcel()"]');
+
+            // Show loading state
+            if (exportBtn) {
+                exportBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Generating Excel...';
+                exportBtn.disabled = true;
+            }
+
+            // Get current form data to maintain filters
+            const form = document.getElementById('filterForm');
+            const params = serializeFormData(form);
+
+            // Create export URL with current filters
+            const exportUrl = '@Url.Action("ExportToExcel")' + '?' + params.toString();
+
+            // Create a temporary link to download the Excel file
+            const link = document.createElement('a');
+            link.href = exportUrl;
+            link.download = `PersonRequests_${new Date().getFullYear()}${(new Date().getMonth()+1).toString().padStart(2,'0')}${new Date().getDate().toString().padStart(2,'0')}.xlsx`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            // Reset button state after a short delay
+            setTimeout(() => {
+                if (exportBtn) {
+                    exportBtn.innerHTML = '<i class="bi bi-file-earmark-spreadsheet"></i> Export to Excel';
+                    exportBtn.disabled = false;
+                }
+            }, 2000);
+        }
+
+        // Alternative version with error handling and fetch API (corrected with Bootstrap Icons)
+        function exportToExcelWithFetch() {
+            // Get the export button to show loading state
+            const exportBtn = document.querySelector('button[onclick="exportToExcel()"]');
+
+            // Show loading state
+            if (exportBtn) {
+                exportBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Generating Excel...';
+                exportBtn.disabled = true;
+            }
+
+            // Get current form data to maintain filters
+            const form = document.getElementById('filterForm');
+            const params = serializeFormData(form);
+
+            // Create export URL with current filters
+            const exportUrl = '@Url.Action("ExportToExcel")' + '?' + params.toString();
+
+            // Use fetch to download the file with better error handling
+            fetch(exportUrl, {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Export failed');
+                }
+                return response.blob();
+            })
+            .then(blob => {
+                // Create download link
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `PersonRequests_${new Date().getFullYear()}${(new Date().getMonth()+1).toString().padStart(2,'0')}${new Date().getDate().toString().padStart(2,'0')}.xlsx`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                window.URL.revokeObjectURL(url);
+            })
+            .catch(error => {
+                console.error('Export error:', error);
+                alert('An error occurred while exporting to Excel. Please try again.');
+            })
+            .finally(() => {
+                // Reset button state
+                if (exportBtn) {
+                    exportBtn.innerHTML = '<i class="bi bi-file-earmark-spreadsheet"></i> Export to Excel';
+                    exportBtn.disabled = false;
+                }
+            });
+        }
             // Make renderValueControl globally available
             window.renderValueControl = renderValueControl;
         </script>
-  
+
     }
 
 
 
-@functions {
-    public IHtmlContent DisplayDate(DateTime? dt)
-    {
-        return dt.HasValue && dt.Value > DateTime.MinValue
-            ? new HtmlString(dt.Value.ToString("MMM dd, yyyy"))
-            : new HtmlString("<span class='text-muted'>N/A</span>");
-    }
+
+    @functions {
+        public IHtmlContent DisplayDate(DateTime? dt)
+        {
+            return dt.HasValue && dt.Value > DateTime.MinValue
+                ? new HtmlString(dt.Value.ToString("MMM dd, yyyy"))
+                : new HtmlString("<span class='text-muted'>Not Provided</span>");
+        }
+
+
+        public IHtmlContent DisplayValue(string? val)
+        {
+            var normalized = val?.Trim()?.ToLower();
+            return string.IsNullOrWhiteSpace(val) || normalized == "n/a" || normalized == "unknown"
+            ? new HtmlString("<span class='badge bg-secondary text-light'>Not Provided</span>")
+            : new HtmlString(System.Net.WebUtility.HtmlEncode(val));
+        }
+
+    
 
     public string GetPageUrl(int page)
     {
         var queryParams = new List<string>();
         if (!string.IsNullOrEmpty(ViewBag.SearchTerm)) queryParams.Add($"searchTerm={Uri.EscapeDataString(ViewBag.SearchTerm)}");
+        if (!string.IsNullOrEmpty(ViewBag.FirstName)) queryParams.Add($"firstName={Uri.EscapeDataString(ViewBag.FirstName)}");
         if (!string.IsNullOrEmpty(ViewBag.Email)) queryParams.Add($"email={Uri.EscapeDataString(ViewBag.Email)}");
         if (!string.IsNullOrEmpty(ViewBag.Phone)) queryParams.Add($"phone={Uri.EscapeDataString(ViewBag.Phone)}");
         if (!string.IsNullOrEmpty(ViewBag.NationalId)) queryParams.Add($"nationalId={Uri.EscapeDataString(ViewBag.NationalId)}");
@@ -413,5 +668,7 @@
         queryParams.Add($"page={page}");
         return "?" + string.Join("&", queryParams);
     }
-}
 
+
+
+}

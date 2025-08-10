@@ -1,0 +1,293 @@
+﻿@model CRM.Models.RequestViewModel
+
+@{
+    ViewData["Title"] = "Edit Request";
+}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet" />
+<link href="~/css/light.css" rel="stylesheet" />
+<link href="~/css/edit.css" rel="stylesheet" />
+@* <style>
+    /* Error styling for invalid inputs for javascripts functions  */
+    .form-control.is-invalid {
+        border-color: #dc3545;
+        box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+    }
+
+    /* Error message styling */
+    .text-danger {
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+        display: block;
+        animation: fadeIn 0.3s ease-in-out;
+    }
+
+    @@keyframes fadeIn {
+        from
+
+    {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    }
+
+    /* Success state styling */
+    .form-control.is-valid {
+        border-color: #28a745;
+        box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+    }
+
+    /* Enhanced form styling */
+    .form-control:focus {
+        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    }
+
+    /* Responsive error message */
+    @@media (max-width: 768px) {
+        .text-danger
+
+    {
+        font-size: 0.8rem;
+    }
+
+    }
+</style> *@
+
+<div class="container mt-5 animate__animated animate__fadeInUp">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb bg-white p-3 rounded shadow-sm">
+            <li class="breadcrumb-item"><a href="/Home/Index" class="text-decoration-none text-primary">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="/Persons/Details/@Model.PersonId" class="text-decoration-none text-primary">Person Details</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Edit Request #@Model.RequestId</li>
+        </ol>
+    </nav>
+
+    <div class="card neon-card shadow-lg animate__animated animate__zoomIn">
+        <div class="card-header text-white text-center py-3"
+             style="background: linear-gradient(135deg, #2c3e50, #34495e); border-radius: 1rem 1rem 0 0;">
+            <h4 class="fw-bold mb-0">Edit Request #@Model.RequestId</h4>
+        </div>
+
+        <div class="card-body neon-form">
+            <form asp-action="EditRequest" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="RequestId" />
+                <input type="hidden" asp-for="PersonId" />
+
+                <!-- Request Information Section -->
+                <div class="p-4 mb-4 border rounded shadow-sm bg-light">
+                    <h5 class="text-primary fw-bold mb-4">Request Information</h5>
+
+                    <!-- Reason Selection -->
+                    <div class="mb-3">
+                        <label asp-for="ReasonID" class="form-label text-primary fw-semibold">Reason Description *</label>
+                        <select asp-for="ReasonID" class="form-select" asp-items="ViewBag.Reasons" id="reasonDropdown">
+                            <option disabled selected value="">-- Select Reason --</option>
+                        </select>
+                        <span asp-validation-for="ReasonID" class="text-danger"></span>
+                    </div>
+
+                    <!-- Other Reason Input (Hidden by default) -->
+                    <div class="mb-3" id="reasonOtherDiv" style="display: none;">
+                        <label asp-for="ReasonDescription_Other" class="form-label text-primary fw-semibold">Please specify the reason *</label>
+                        <input asp-for="ReasonDescription_Other" class="form-control" placeholder="Enter custom reason..." />
+                        <span asp-validation-for="ReasonDescription_Other" class="text-danger"></span>
+                    </div>
+
+                    <!-- Comments -->
+                    <div class="mb-3">
+                        <label asp-for="Comments" class="form-label text-primary fw-semibold">Comments</label>
+                        <textarea asp-for="Comments" class="form-control" rows="4" placeholder="Add any additional comments or notes..."></textarea>
+                        <span asp-validation-for="Comments" class="text-danger"></span>
+                    </div>
+
+                    <!-- Status and Follow-up Count Row -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="StatusId" class="form-label text-primary fw-semibold">Status *</label>
+                            <select asp-for="StatusId" class="form-select" asp-items="ViewBag.Statuses">
+                                <option disabled selected value="">-- Select Status --</option>
+                            </select>
+                            <span asp-validation-for="StatusId" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="FollowUpCount" class="form-label text-primary fw-semibold">Follow-Up Count</label>
+                            <input asp-for="FollowUpCount"
+                                   class="form-control"
+                                   readonly
+                                   style="background-color: #f8f9fa; cursor: not-allowed; color: #6c757d;"
+                                   title="This field is automatically managed by the system" />
+                            <small class="text-muted">This field is automatically updated by the system</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Request Audit Information (Read-only) -->
+                <div class="p-4 mb-4 border rounded shadow-sm bg-white">
+                    <h5 class="text-secondary fw-bold mb-4">Request History</h5>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label text-secondary fw-semibold">Created By</label>
+                            <input type="text" class="form-control"
+                                   value="@Model.CreatedByName"
+                                   readonly
+                                   style="background-color: #f8f9fa; cursor: not-allowed; color: #6c757d;" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-secondary fw-semibold">Created At</label>
+                            <input type="text" class="form-control"
+                                   value="@Model.CreatedAt.ToString("yyyy-MM-dd HH:mm")"
+                                   readonly
+                                   style="background-color: #f8f9fa; cursor: not-allowed; color: #6c757d;" />
+                        </div>
+                    </div>
+
+                    @if (Model.UpdatedAt.HasValue)
+                    {
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label text-secondary fw-semibold">Last Updated By</label>
+                                <input type="text" class="form-control"
+                                       value="@Model.UpdatedByName"
+                                       readonly
+                                       style="background-color: #f8f9fa; cursor: not-allowed; color: #6c757d;" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-secondary fw-semibold">Last Updated At</label>
+                                <input type="text" class="form-control"
+                                       value="@Model.UpdatedAt?.ToString("yyyy-MM-dd HH:mm")"
+                                       readonly
+                                       style="background-color: #f8f9fa; cursor: not-allowed; color: #6c757d;" />
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info" role="alert">
+                            <i class="bi bi-info-circle me-2"></i>
+                            This request has not been updated since creation.
+                        </div>
+                    }
+                </div>
+
+                <!-- Submit Buttons -->
+                <div class="text-end">
+                    <a href="@Url.Action("Details", "Persons", new { id = Model.PersonId })" class="btn btn-cancel me-2">
+                        <i class="bi bi-arrow-left me-1"></i> Back to Person Details
+                    </a>
+                    <button type="submit" class="btn btn-glow">
+                        <i class="bi bi-check-circle me-1"></i> Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const reasonDropdown = document.getElementById("reasonDropdown");
+            const reasonOtherDiv = document.getElementById("reasonOtherDiv");
+            const reasonOtherInput = document.querySelector('input[name="ReasonDescription_Other"]');
+            const form = document.querySelector("form");
+
+            // Function to toggle the "Other" reason input
+            function toggleReasonOther() {
+                if (reasonDropdown && reasonOtherDiv) {
+                    const isOtherSelected = reasonDropdown.value === "-1";
+                    reasonOtherDiv.style.display = isOtherSelected ? "block" : "none";
+
+                    // Clear the input when hiding
+                    if (!isOtherSelected && reasonOtherInput) {
+                        reasonOtherInput.value = "";
+                    }
+
+                    // Add visual feedback
+                    if (isOtherSelected) {
+                        reasonOtherDiv.classList.add("animate__animated", "animate__fadeIn");
+                        // Focus on the input after animation
+                        setTimeout(() => {
+                            if (reasonOtherInput) reasonOtherInput.focus();
+                        }, 300);
+                    }
+                }
+            }
+
+            // Event listener for reason dropdown change
+            if (reasonDropdown) {
+                reasonDropdown.addEventListener("change", toggleReasonOther);
+                // Initialize on page load
+                toggleReasonOther();
+            }
+
+            // Form validation
+            if (form) {
+                form.addEventListener("submit", function (e) {
+                    let isValid = true;
+                    let errorMessage = "";
+
+                    // Validate reason selection
+                    if (reasonDropdown) {
+                        const reasonValue = reasonDropdown.value;
+                        const reasonOtherValue = reasonOtherInput ? reasonOtherInput.value.trim() : "";
+
+                        if (!reasonValue || reasonValue === "") {
+                            isValid = false;
+                            errorMessage = "Please select a reason.";
+                        } else if (reasonValue === "-1" && !reasonOtherValue) {
+                            isValid = false;
+                            errorMessage = "Please specify the reason when 'Other' is selected.";
+                        }
+                    }
+
+                    // Validate status selection
+                    const statusDropdown = document.querySelector('select[name="StatusId"]');
+                    if (statusDropdown && (!statusDropdown.value || statusDropdown.value === "")) {
+                        isValid = false;
+                        errorMessage = errorMessage || "Please select a status.";
+                    }
+
+                    // If validation fails, prevent submission and show error
+                    if (!isValid) {
+                        e.preventDefault();
+                        alert(errorMessage);
+                        return false;
+                    }
+                });
+            }
+
+            // Add visual feedback for form interactions
+            const formControls = document.querySelectorAll('.form-control, .form-select');
+            formControls.forEach(control => {
+                control.addEventListener('focus', function() {
+                    this.classList.add('shadow-sm');
+                });
+
+                control.addEventListener('blur', function() {
+                    this.classList.remove('shadow-sm');
+                });
+            });
+
+            // Auto-resize textarea
+            const textareas = document.querySelectorAll('textarea');
+            textareas.forEach(textarea => {
+                textarea.addEventListener('input', function() {
+                    this.style.height = 'auto';
+                    this.style.height = (this.scrollHeight) + 'px';
+                });
+            });
+        });
+    </script>
+}
+
+@{
+    await Html.RenderPartialAsync("_ValidationScriptsPartial");
+}
